@@ -284,8 +284,7 @@
     <script>
         // =========================================================
         // ★★★ データ編集エリア ★★★
-        // 注意: プレイリストが404(白画面)になる場合は、Sunoで「Public」に設定するか、
-        // Sunoの「Share」→「Embed」から取得したURLをここに貼り付けてください。
+        // プレイリストは「矢印マーク(Share)」→「Copy Link」のURLそのままでOKです。
         // =========================================================
         
         const contents = [
@@ -327,13 +326,14 @@
         const modal = document.getElementById('modal');
         const modalMessage = document.getElementById('modal-message');
 
-        // ★URL変換ロジックの修正版★
+        // ★★★ URL変換ロジックの修正版（決定版） ★★★
+        // プレイリストのURL構造を正しく変換するように戻しました
         function convertToEmbedUrl(originalUrl) {
             // すでにEmbed形式なら何もしない
             if (originalUrl.includes('/embed/')) return originalUrl;
             
-            // プレイリストの場合: /playlist/ を /embed/playlist/ に変換します
-            // これで黒い画面は直りますが、プレイリストがPrivateだと白い404になります。
+            // プレイリストの場合: 
+            // suno.com/playlist/[ID] → suno.com/embed/playlist/[ID] に変換します
             if (originalUrl.includes('/playlist/')) {
                 return originalUrl.replace('/playlist/', '/embed/playlist/');
             }
@@ -348,8 +348,9 @@
             card.style.animationDelay = `${index * 0.15}s`;
 
             let alertMsg = "";
+            // 曲の共有リンク（/s/）の場合のみ警告を出す
             if (embedUrl.includes('/s/')) {
-                alertMsg = `<div style="color:red; font-size:0.8rem; padding:10px;">※Shareリンクは表示できません。Embed URLを使用してください。</div>`;
+                alertMsg = `<div style="color:red; font-size:0.8rem; padding:10px;">※Shareリンクは表示できません。曲の場合はEmbed URLを使用してください。</div>`;
             }
 
             card.innerHTML = `
