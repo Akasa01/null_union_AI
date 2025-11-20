@@ -7,588 +7,259 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Noto+Sans+JP:wght@400;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
 
     <style>
-        /* --- デザイン設定 (CSS) --- */
+        /* --- デザイン変数 --- */
         :root {
             /* カラーパレット */
-            --theme-sky: #80DEEA; /* ベースの空色 */
-            --glass-bg: rgba(255, 255, 255, 0.15);
-            --glass-border: rgba(255, 255, 255, 0.4);
-            --text-main: #263238;
-            --text-accent: #00E5FF; /* 発光感のあるシアン */
-            --text-sub: #546E7A;
+            --theme-sky-deep: #01579B; /* 深い青空 */
+            --theme-accent: #00E5FF;   /* 発光シアン */
+            --text-main: #0D47A1;      /* 基本テキスト色（濃い青） */
+            --text-white: #FFFFFF;     /* 白文字 */
             
-            /* フォント設定 */
-            --font-tech: 'Orbitron', sans-serif;
-            --font-jp: 'Zen Kaku Gothic New', sans-serif;
-            --font-mono: 'Courier New', Courier, monospace;
+            /* カードスタイル */
+            --glass-bg: rgba(255, 255, 255, 0.85); /* 背景をより白く、不透明に */
+            --glass-border: rgba(255, 255, 255, 1);
+            
+            /* フォント定義 */
+            --font-base: 'Noto Sans JP', sans-serif;    /* 本文用 */
+            --font-style: 'Dela Gothic One', cursive; /* 見出し・強調用 */
+            --font-en: 'Orbitron', sans-serif;          /* 英数字用 */
         }
 
         body {
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
             color: var(--text-main);
-            font-family: var(--font-jp);
+            font-family: var(--font-base);
             min-height: 100vh;
             overflow-x: hidden;
             position: relative;
         }
 
-        /* --- 背景アニメーション (流れる雲) --- */
-        .bg-sky-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -3;
-            background: linear-gradient(to bottom, #4FC3F7, #B3E5FC); /* 青空のグラデーション */
-            overflow: hidden;
+        /* --- 背景演出 --- */
+        .bg-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -5;
+            background: linear-gradient(to bottom, #29B6F6, #B3E5FC); /* 少し濃い目の青空グラデーション */
         }
-
-        .bg-clouds {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 200%;
-            height: 100%;
-            z-index: -2;
-            /* CSSで雲のような模様を生成 */
+        .cloud-layer {
+            position: absolute; top: 0; left: 0; width: 200%; height: 100%;
             background: 
-                radial-gradient(circle at 50% 50%, rgba(255,255,255,0.6) 0%, transparent 20%),
-                radial-gradient(circle at 20% 60%, rgba(255,255,255,0.6) 0%, transparent 30%),
-                radial-gradient(circle at 80% 30%, rgba(255,255,255,0.5) 0%, transparent 25%),
-                radial-gradient(circle at 40% 80%, rgba(255,255,255,0.4) 0%, transparent 35%);
-            background-size: 1000px 800px;
-            opacity: 0.8;
-            animation: flowClouds 60s linear infinite;
+                radial-gradient(circle at 50% 50%, rgba(255,255,255,0.9) 0%, transparent 20%),
+                radial-gradient(circle at 20% 60%, rgba(255,255,255,0.9) 0%, transparent 30%),
+                radial-gradient(circle at 80% 30%, rgba(255,255,255,0.7) 0%, transparent 25%);
+            background-size: 1200px 900px; opacity: 0.8;
+            animation: flow 60s linear infinite;
         }
+        .cloud-layer.slow { background-size: 1500px 1000px; opacity: 0.5; animation: flow 90s linear infinite reverse; }
+        @keyframes flow { 100% { transform: translateX(-50%); } }
         
-        /* もう一層雲を重ねて立体感を出す */
-        .bg-clouds-2 {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 200%;
-            height: 100%;
-            z-index: -2;
-            background: 
-                radial-gradient(circle at 10% 20%, rgba(255,255,255,0.4) 0%, transparent 20%),
-                radial-gradient(circle at 90% 70%, rgba(255,255,255,0.4) 0%, transparent 30%);
-            background-size: 800px 600px;
-            opacity: 0.6;
-            animation: flowClouds 40s linear infinite reverse; /* 逆方向にゆっくり動く */
-        }
-
-        @keyframes flowClouds {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
-
-        /* 色味調整用のオーバーレイ (不透明度40%程度でテーマカラーを重ねる) */
-        .bg-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            background: linear-gradient(135deg, rgba(224, 247, 250, 0.4) 0%, rgba(128, 222, 234, 0.4) 100%);
-            backdrop-filter: blur(2px); /* ほんの少しぼかして空気感を出す */
+        .grid-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -4;
+            background-image: linear-gradient(rgba(255,255,255,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.4) 1px, transparent 1px);
+            background-size: 40px 40px;
+            mask-image: radial-gradient(circle at center, black 50%, transparent 100%);
             pointer-events: none;
+        }
+        .tint-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -3;
+            background: rgba(225, 245, 254, 0.3); backdrop-filter: blur(2px); pointer-events: none;
         }
 
         /* --- ヘッダー --- */
         header {
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            padding: 40px 5%;
-            /* グラスモーフィズム強化 */
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            margin-bottom: 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.3);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-            animation: slideInLeft 1s cubic-bezier(0.23, 1, 0.32, 1);
+            display: flex; align-items: center; padding: 40px 5%;
+            background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px);
+            border-bottom: 2px solid #fff; box-shadow: 0 5px 30px rgba(0,0,0,0.05);
         }
-
         .creator-icon {
-            width: 220px;
-            height: 220px;
-            object-fit: contain;
-            margin-right: 40px;
-            background-color: transparent; 
-            filter: drop-shadow(0 20px 30px rgba(0, 229, 255, 0.3));
-            transition: transform 0.4s ease, filter 0.4s ease;
-            flex-shrink: 0;
-            z-index: 10;
+            width: 160px; height: 160px; object-fit: contain; margin-right: 30px; flex-shrink: 0;
+            filter: drop-shadow(0 10px 20px rgba(0, 172, 193, 0.3)); transition: transform 0.4s;
         }
-
-        .creator-icon:hover {
-            transform: scale(1.02) rotate(-2deg);
-            filter: drop-shadow(0 0 40px rgba(0, 229, 255, 0.6)); /* 発光強化 */
+        .creator-icon:hover { transform: scale(1.05) rotate(-2deg); }
+        
+        .title-area h1 {
+            font-family: var(--font-style); /* スタイリッシュフォント適用 */
+            font-size: 3.2rem; margin: 0; line-height: 1.1;
+            color: var(--text-main); letter-spacing: -0.02em;
+            text-shadow: 2px 2px 0 #fff, 4px 4px 10px rgba(0, 229, 255, 0.3);
         }
-
-        .title-area {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+        .title-area .subtitle {
+            font-family: var(--font-en); color: #0288D1; font-size: 1rem;
+            letter-spacing: 0.25em; margin-top: 15px; font-weight: 700; text-transform: uppercase;
+            display: flex; align-items: center;
         }
-
-        h1 {
-            font-family: var(--font-jp);
-            font-size: 3.8rem;
-            font-weight: 900;
-            margin: 0;
-            line-height: 1.1;
-            /* メタリックなグラデーション文字 */
-            background: linear-gradient(135deg, #006064 0%, #00ACC1 50%, #00E5FF 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: -0.03em;
-            text-shadow: 2px 2px 10px rgba(255,255,255,0.4);
-        }
-
-        .subtitle {
-            font-family: var(--font-tech);
-            font-size: 1.4rem;
-            color: var(--text-sub);
-            margin-top: 5px;
-            font-weight: 700;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            display: flex;
-            align-items: center;
-        }
-
-        .subtitle::before {
-            content: '';
-            display: inline-block;
-            width: 30px;
-            height: 2px;
-            background: var(--text-accent);
-            margin-right: 10px;
+        .title-area .subtitle::before {
+            content: ''; display: inline-block; width: 40px; height: 3px; background: var(--theme-accent); margin-right: 15px;
         }
 
         @media (max-width: 768px) {
-            header {
-                flex-direction: column;
-                text-align: center;
-                padding: 30px 20px;
-            }
-            .creator-icon {
-                margin-right: 0;
-                margin-bottom: 20px;
-                width: 160px;
-                height: 160px;
-            }
-            h1 {
-                font-size: 2.5rem;
-            }
-            .subtitle {
-                font-size: 1rem;
-                justify-content: center;
-            }
+            header { flex-direction: column; text-align: center; padding: 30px 5%; }
+            .creator-icon { margin-right: 0; margin-bottom: 20px; width: 120px; height: 120px; }
+            .title-area h1 { font-size: 2.4rem; }
+            .title-area .subtitle { font-size: 0.9rem; justify-content: center; }
         }
 
-        /* --- コンテンツエリア --- */
+        /* --- メインコンテンツ --- */
         .container {
-            width: 90%;
-            max-width: 1400px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 50px;
-            padding-bottom: 100px;
-            position: relative;
-            z-index: 1;
+            width: 90%; max-width: 1200px; margin: 0 auto; padding-bottom: 100px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 50px;
         }
 
-        /* --- 見出しデザイン (未来的・テック風) --- */
-        .section-title {
-            grid-column: 1 / -1;
-            margin-top: 60px;
-            margin-bottom: 20px;
-            padding: 10px 0;
-            
-            font-family: var(--font-tech); /* 英語フォント優先 */
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--text-main);
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            
-            display: flex;
-            align-items: flex-end;
-            border-bottom: 2px solid rgba(0, 0, 0, 0.1);
-            position: relative;
-
-            opacity: 0;
-            transform: translateX(-30px);
-            transition: opacity 0.8s, transform 0.8s;
+        /* --- 見出し (視認性＆スタイル強化) --- */
+        .section-header {
+            grid-column: 1 / -1; margin-top: 70px; margin-bottom: 30px;
+            display: flex; align-items: baseline;
+            border-bottom: 4px solid var(--text-main); /* 太い下線 */
+            padding-bottom: 10px; position: relative;
+            opacity: 0; transform: translateX(-30px); transition: all 0.8s;
         }
-
-        .section-title.visible {
-            opacity: 1;
-            transform: translateX(0);
-        }
+        .section-header.visible { opacity: 1; transform: translateX(0); }
         
-        /* ナンバリング装飾 */
-        .section-number {
-            font-size: 3rem;
-            color: rgba(0, 229, 255, 0.2); /* 薄いシアン */
-            font-weight: 900;
-            margin-right: 15px;
-            line-height: 0.8;
-            position: relative;
-            top: 2px;
+        /* 装飾的なアクセントバー */
+        .section-header::after {
+            content: ''; position: absolute; bottom: -4px; left: 0; width: 120px; height: 4px;
+            background: var(--theme-accent); box-shadow: 0 0 15px var(--theme-accent);
         }
 
-        /* 下線の装飾バー */
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 100px; /* 短いアクセントライン */
-            height: 2px;
-            background: var(--text-accent);
-            box-shadow: 0 0 10px var(--text-accent);
+        .sec-num {
+            font-family: var(--font-en); font-size: 4.5rem; font-weight: 900;
+            color: var(--text-white); /* 白文字でくっきりと */
+            line-height: 0.8; margin-right: 20px;
+            /* 濃い青の影で浮き上がらせる */
+            text-shadow: 4px 4px 0px var(--text-main), 0 0 20px rgba(0, 229, 255, 0.5);
+            position: relative; top: 5px;
         }
-
-        .section-jp-text {
-            font-family: var(--font-jp);
-            font-size: 1.5rem;
-            font-weight: 700;
+        .sec-title {
+            font-family: var(--font-style); /* スタイリッシュフォント */
+            font-size: 2rem; color: var(--text-main);
         }
 
         /* --- カードデザイン --- */
         .card {
-            background: rgba(255, 255, 255, 0.35); /* 透明度アップ */
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            border-radius: 24px;
-            padding: 25px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); /* 柔らかい影 */
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            
-            opacity: 0;
-            transform: translateY(50px);
-            transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1), transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s;
+            background: var(--glass-bg); backdrop-filter: blur(15px);
+            border: 2px solid #fff; border-radius: 20px; padding: 25px;
+            box-shadow: 0 15px 40px rgba(0, 50, 100, 0.1);
+            display: flex; flex-direction: column;
+            opacity: 0; transform: translateY(40px); transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
         }
-
-        .card.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
+        .card.visible { opacity: 1; transform: translateY(0); }
         .card:hover {
-            transform: translateY(-10px) !important; 
-            box-shadow: 0 20px 50px rgba(0, 229, 255, 0.2); /* ホバー時に青い光 */
-            background: rgba(255, 255, 255, 0.5);
-            border-color: #fff;
+            transform: translateY(-10px); box-shadow: 0 25px 50px rgba(0, 229, 255, 0.3);
+            border-color: var(--theme-accent);
         }
 
         .iframe-container {
-            position: relative;
-            width: 100%;
-            height: 380px;
-            border-radius: 16px;
-            overflow: hidden;
-            background: rgba(0,0,0,0.05);
-            margin-bottom: 15px;
+            width: 100%; height: 380px; border-radius: 16px; overflow: hidden;
+            background: #F5F5F5; margin-bottom: 20px; border: 1px solid rgba(0,0,0,0.05);
         }
+        iframe { width: 100%; height: 100%; border: none; }
 
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
+        /* プレイリストカード */
+        .playlist-card {
+            display: block; width: 100%; height: 380px; border-radius: 16px; margin-bottom: 20px;
+            text-decoration: none; position: relative; overflow: hidden; color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
         }
-
-        /* プレイリスト用カード */
-        .playlist-placeholder {
-            width: 100%;
-            height: 380px;
-            border-radius: 16px;
-            background: linear-gradient(135deg, #263238 0%, #37474F 100%);
-            display: block;
-            text-decoration: none;
-            transition: all 0.3s;
-            margin-bottom: 15px;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.1);
+        .playlist-card.no-image {
+            background: #01579B; /* 濃い青背景 */
+            background-image: linear-gradient(rgba(0,229,255,0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(0,229,255,0.2) 1px, transparent 1px);
+            background-size: 30px 30px;
         }
-
-        /* 画像なし時のサイバー背景 */
-        .playlist-placeholder.no-image {
-            background: #101010;
+        .playlist-card.has-image { background-size: cover; background-position: center; }
+        .playlist-inner {
+            position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            background: rgba(0,0,0,0.4); transition: background 0.3s;
         }
-        .playlist-placeholder.no-image::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: 
-                linear-gradient(transparent 95%, var(--text-accent) 100%), 
-                linear-gradient(90deg, transparent 95%, var(--text-accent) 100%);
-            background-size: 40px 40px;
-            opacity: 0.1;
-            animation: gridMove 20s linear infinite;
-        }
-
-        @keyframes gridMove {
-            0% { transform: perspective(500px) rotateX(20deg) translateY(0); }
-            100% { transform: perspective(500px) rotateX(20deg) translateY(40px); }
-        }
-
-        .playlist-placeholder.has-image {
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-        }
-
-        .playlist-content {
-            position: relative;
-            z-index: 2;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: #fff;
-            transition: all 0.3s ease;
-        }
-
-        .playlist-placeholder.has-image .playlist-content {
-            background: rgba(0, 0, 0, 0.3);
-            opacity: 0.7;
-        }
-        .playlist-placeholder.has-image:hover .playlist-content {
-            background: rgba(0, 0, 0, 0.6);
-            opacity: 1;
-        }
+        .playlist-card:hover .playlist-inner { background: rgba(0,0,0,0.6); }
         
-        .playlist-icon {
-            font-size: 4rem;
-            margin-bottom: 15px;
-            filter: drop-shadow(0 0 10px var(--text-accent));
+        .pl-icon { font-size: 4rem; margin-bottom: 15px; filter: drop-shadow(0 0 15px var(--theme-accent)); }
+        .pl-text { font-family: var(--font-en); font-weight: 700; font-size: 1.4rem; margin-bottom: 15px; letter-spacing: 1px; }
+        .pl-btn {
+            border: 2px solid var(--theme-accent); color: var(--theme-accent); padding: 10px 24px;
+            font-family: var(--font-en); font-weight: 700; border-radius: 50px; /* 丸ボタン */
+            background: rgba(0,40,60,0.6); transition: all 0.3s;
         }
+        .playlist-card:hover .pl-btn { background: var(--theme-accent); color: #000; box-shadow: 0 0 25px var(--theme-accent); }
 
-        .playlist-title {
-            font-family: var(--font-tech);
-            font-size: 1.4rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-            margin-bottom: 10px;
-        }
-
-        .playlist-btn {
-            padding: 10px 25px;
-            background: transparent;
-            border: 1px solid var(--text-accent);
-            color: var(--text-accent);
-            border-radius: 4px;
-            font-family: var(--font-tech);
-            font-weight: bold;
-            margin-top: 10px;
-            transition: all 0.3s;
-        }
-        .playlist-placeholder:hover .playlist-btn {
-            background: var(--text-accent);
-            color: #000;
-            box-shadow: 0 0 20px var(--text-accent);
-        }
-
-
-        .comment-footer {
-            margin-top: auto;
-            display: flex;
-            justify-content: flex-end;
-            border-top: 1px solid rgba(255,255,255,0.2);
-            padding-top: 15px;
-        }
-
-        /* --- ボタンデザイン修正 (チップ型) --- */
-        .comment-trigger {
-            background: rgba(255, 255, 255, 0.3);
-            border: 1px solid rgba(0, 229, 255, 0.5);
-            color: #00838F;
-            
-            font-family: var(--font-tech); 
-            font-size: 0.8rem;
-            letter-spacing: 0.1em;
-            
-            border-radius: 4px;
-            padding: 8px 18px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
+        /* --- カードフッター (アルバム名配置) --- */
+        .card-footer {
+            margin-top: auto; padding-top: 15px;
+            display: flex; justify-content: space-between; /* 左右配置 */
             align-items: center;
-            gap: 10px;
-            position: relative;
-            overflow: hidden;
+            border-top: 1px solid rgba(0,0,0,0.1);
         }
 
-        .comment-trigger:hover {
-            background: var(--text-accent);
-            color: #fff;
-            border-color: var(--text-accent);
-            box-shadow: 0 0 15px rgba(0, 229, 255, 0.6);
+        /* アルバム名表示エリア */
+        .album-name {
+            font-family: var(--font-style); /* スタイリッシュフォント */
+            font-size: 1rem; color: var(--text-main);
+            opacity: 0.8; font-style: italic; /* おしゃれな斜体 */
+            display: flex; align-items: center;
+        }
+        .album-name::before {
+            content: '💿'; margin-right: 8px; font-style: normal; font-size: 1.2em;
         }
 
-        /* --- モーダル (ノイズ音声端末風) --- */
+        .btn-comment {
+            background: transparent; border: 2px solid var(--text-main); color: var(--text-main);
+            padding: 8px 20px; font-family: var(--font-en); font-weight: 700; font-size: 0.9rem;
+            border-radius: 50px; /* 丸ボタン */
+            cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s;
+        }
+        .btn-comment:hover {
+            background: var(--text-main); color: #fff;
+            box-shadow: 0 5px 15px rgba(13, 71, 161, 0.3); transform: translateY(-2px);
+        }
+
+        /* --- モーダル --- */
         .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 20, 30, 0.7);
-            backdrop-filter: blur(8px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-            z-index: 1000;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 20, 40, 0.85); backdrop-filter: blur(8px);
+            z-index: 9999; display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s;
         }
-
-        .modal-overlay.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        .modal-wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
-            max-width: 600px;
-            width: 90%;
-        }
-
+        .modal-overlay.active { opacity: 1; pointer-events: all; }
+        
+        .modal-container { width: 90%; max-width: 550px; display: flex; flex-direction: column; align-items: center; }
         .modal-icon {
-            width: 120px;
-            height: 120px;
-            object-fit: contain;
-            z-index: 2;
-            filter: drop-shadow(0 0 20px var(--text-accent));
-            animation: talkShake 0.2s infinite alternate; 
+            width: 110px; height: 110px; object-fit: contain; margin-bottom: -25px; z-index: 2;
+            filter: drop-shadow(0 0 15px var(--theme-accent)); animation: shake 0.4s infinite alternate;
         }
-
-        @keyframes talkShake {
-            from { transform: translateY(0) rotate(0deg); }
-            to { transform: translateY(-2px) rotate(1deg); }
+        @keyframes shake { from { transform: rotate(-3deg); } to { transform: rotate(3deg); } }
+        
+        .modal-window {
+            background: #0A1525; border: 2px solid var(--theme-accent); border-radius: 16px;
+            padding: 45px 35px 35px; width: 100%;
+            box-shadow: 0 0 40px rgba(0, 229, 255, 0.25);
+            background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,229,255,0.05) 3px);
+            transform: scale(0.95); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-
-        .modal-content {
-            background-color: #0a0a0a;
-            /* ノイズテクスチャ */
-            background-image: 
-                repeating-linear-gradient(
-                    0deg,
-                    transparent,
-                    transparent 2px,
-                    rgba(0, 255, 65, 0.03) 2px,
-                    rgba(0, 255, 65, 0.03) 4px
-                );
-            border: 2px solid var(--text-accent);
-            border-radius: 8px; /* 角を少し鋭く */
-            padding: 30px;
-            margin-top: 20px;
-            width: 100%;
-            text-align: left;
-            position: relative;
-            box-shadow: 0 0 30px rgba(0, 229, 255, 0.15);
-            
-            color: var(--text-accent);
-            font-family: var(--font-mono);
-            text-shadow: 0 0 5px rgba(0, 229, 255, 0.5);
-            
-            transform: scale(0.9);
-            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        /* 吹き出しのしっぽ */
-        .modal-content::after {
-            content: '';
-            position: absolute;
-            top: -12px; left: 50%; transform: translateX(-50%);
-            border-width: 0 12px 12px 12px;
-            border-style: solid;
-            border-color: transparent transparent var(--text-accent) transparent;
-        }
-        .modal-content::before {
-            content: '';
-            position: absolute;
-            top: -9px; left: 50%; transform: translateX(-50%);
-            border-width: 0 10px 10px 10px;
-            border-style: solid;
-            border-color: transparent transparent #0a0a0a transparent;
-            z-index: 1;
-        }
-
-        .modal-overlay.active .modal-content {
-            transform: scale(1);
-        }
-
+        .modal-overlay.active .modal-window { transform: scale(1); }
+        
         .modal-text {
-            font-size: 1.1rem;
-            line-height: 1.8;
-            margin-bottom: 25px;
+            color: var(--theme-accent); font-family: 'Courier New', monospace; line-height: 1.7;
+            font-size: 1.05rem; margin-bottom: 25px; text-shadow: 0 0 8px rgba(0, 229, 255, 0.6);
         }
-
-        .modal-text::after {
-            content: '_';
-            animation: blink 1s infinite;
+        .modal-text::after { content: '_'; animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+        
+        .modal-close {
+            background: transparent; border: 2px solid var(--theme-accent); color: var(--theme-accent);
+            width: 100%; padding: 12px; font-family: var(--font-en); font-weight: 700; font-size: 1rem;
+            cursor: pointer; transition: 0.2s; border-radius: 8px;
         }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
-
-        .close-btn {
-            display: block;
-            margin: 0 auto;
-            background: transparent;
-            color: var(--text-accent);
-            border: 1px solid var(--text-accent);
-            padding: 8px 30px;
-            font-family: var(--font-tech);
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .close-btn:hover {
-            background: var(--text-accent);
-            color: #000;
-            box-shadow: 0 0 15px var(--text-accent);
-        }
-
-        @keyframes slideInLeft {
-            from { opacity: 0; transform: translateX(-50px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
+        .modal-close:hover { background: var(--theme-accent); color: #000; box-shadow: 0 0 20px var(--theme-accent); }
     </style>
 </head>
 <body>
 
-    <div class="bg-sky-container">
-        <div class="bg-clouds"></div>
-        <div class="bg-clouds-2"></div>
+    <div class="bg-container">
+        <div class="cloud-layer"></div>
+        <div class="cloud-layer slow"></div>
     </div>
-    <div class="bg-overlay"></div>
+    <div class="grid-overlay"></div>
+    <div class="tint-overlay"></div>
 
     <header>
         <img src="icon.png" alt="Creator Icon" class="creator-icon">
@@ -601,18 +272,18 @@
     <div class="container" id="content-grid"></div>
 
     <div class="modal-overlay" id="modal">
-        <div class="modal-wrapper">
+        <div class="modal-container">
             <img src="icon.png" alt="Creator Icon" class="modal-icon">
-            <div class="modal-content">
-                <p class="modal-text" id="modal-message"></p>
-                <button class="close-btn" onclick="closeModal()">TERMINATE</button>
+            <div class="modal-window">
+                <div class="modal-text" id="modal-message"></div>
+                <button class="modal-close" onclick="closeModal()">CLOSE TERMINAL</button>
             </div>
         </div>
     </div>
 
     <script>
         // =========================================================
-        // ★★★ データ編集エリア ★★★
+        // ★★★ データ編集エリア (アルバム名追加) ★★★
         // =========================================================
         
         const sections = [
@@ -635,15 +306,18 @@
                     {
                         url: "https://suno.com/playlist/d2cdf5aa-ebc5-449e-a28e-030bea80c162",
                         comment: "空白同盟の音楽ゲームを作りたいと思い、制作中のプレイリストです。",
-                        image: "playlist_bg1.jpg"
+                        image: "playlist_bg1.jpg",
+                        albumName: "空白同盟OST - プロトタイプ編" // ★追加
                     },
                     {
                         url: "https://suno.com/playlist/3332134a-a941-4183-9232-35e33e31bd47",
-                        comment: "ちょっとバトルっぽいインストアルバムができたので。戦場的なイメージです。"
+                        comment: "ちょっとバトルっぽいインストアルバムができたので。戦場的なイメージです。",
+                        albumName: "BATTLE TRAX: Frontline" // ★追加
                     },
                     {
                         url: "https://suno.com/playlist/ecc1ec13-ce37-425f-a21a-4fb8c8e526ce",
-                        comment: "TRPGダブルクロス3rdを意識した、熱血系バトルインストアルバムです。"
+                        comment: "TRPGダブルクロス3rdを意識した、熱血系バトルインストアルバムです。",
+                        albumName: "X-over Resonance" // ★追加
                     }
                 ]
             },
@@ -652,16 +326,17 @@
                 items: [
                     {
                         url: "https://suno.com/playlist/b1b02fb9-6200-442a-8f3f-8a6cc8aba409",
-                        comment: "ニディガの「きゅびびびびずむ」のような音楽破壊系電波ソングは、SUNOAIで作れるのか？　という実験ガチャ置き場です。"
+                        comment: "ニディガの「きゅびびびびずむ」のような音楽破壊系電波ソングは、SUNOAIで作れるのか？という実験です。",
+                        albumName: "電波中毒実験室 vol.1" // ★追加
                     },
                     {
                         url: "https://suno.com/playlist/72db9808-6aca-4dec-8e4e-bab7c0893d01",
-                        comment: "好きな曲調が古いことに気付いたので、令和ニュアンスを足していくチャレンジガチャ置き場です。"
+                        comment: "好きな曲調が古いことに気付いたので、令和ニュアンスを足していくチャレンジガチャ置き場です。",
+                        albumName: "REIWA SOUND CHALLENGE" // ★追加
                     }
                 ]
             }
         ];
-
 
         // =========================================================
         // ロジック部分
@@ -672,117 +347,74 @@
         const modalMessage = document.getElementById('modal-message');
 
         sections.forEach((section, secIndex) => {
-            // 1. セクションタイトル生成 (デザイン刷新)
-            const titleDiv = document.createElement('div');
-            titleDiv.className = 'section-title';
-            // ナンバリングを01, 02のように付与
+            // 見出し生成
+            const headerDiv = document.createElement('div');
+            headerDiv.className = 'section-header';
             const num = (secIndex + 1).toString().padStart(2, '0');
-            titleDiv.innerHTML = `<span class="section-number">${num}</span> <span class="section-jp-text">${section.title}</span>`;
-            grid.appendChild(titleDiv);
+            headerDiv.innerHTML = `<span class="sec-num">${num}</span><span class="sec-title">${section.title}</span>`;
+            grid.appendChild(headerDiv);
 
-            // 2. アイテム生成
+            // カード生成
             section.items.forEach((item) => {
                 const card = document.createElement('div');
                 card.className = 'card';
                 
-                let cardContent = '';
+                let cardMainContent = '';
+                let albumNameHtml = ''; // アルバム名用HTML
 
                 if (item.url.includes('/playlist/')) {
+                    // プレイリスト
                     const hasImage = item.image ? 'has-image' : 'no-image';
                     const bgStyle = item.image ? `style="background-image: url('${item.image}');"` : '';
-
-                    cardContent = `
-                        <a href="${item.url}" target="_blank" class="playlist-placeholder ${hasImage}" ${bgStyle}>
-                            <div class="playlist-content">
-                                <div class="playlist-icon">🎵</div>
-                                <div class="playlist-title">Open Playlist</div>
-                                <div class="playlist-btn">▶ Play on Suno</div>
+                    cardMainContent = `
+                        <a href="${item.url}" target="_blank" class="playlist-card ${hasImage}" ${bgStyle}>
+                            <div class="playlist-inner">
+                                <div class="pl-icon">🎵</div>
+                                <div class="pl-text">OPEN PLAYLIST</div>
+                                <div class="pl-btn">PLAY ON SUNO</div>
                             </div>
                         </a>
                     `;
-                } else {
-                    let embedUrl = item.url;
-                    if (!embedUrl.includes('/embed/')) {
-                       embedUrl = embedUrl.replace('suno.com/song/', 'suno.com/embed/');
+                    // アルバム名がある場合のみHTMLを生成
+                    if (item.albumName) {
+                        albumNameHtml = `<div class="album-name">${item.albumName}</div>`;
                     }
-                    cardContent = `
+
+                } else {
+                    // 曲 (Embed)
+                    let embedUrl = item.url.replace('suno.com/song/', 'suno.com/embed/');
+                    cardMainContent = `
                         <div class="iframe-container">
-                            <iframe 
-                                src="${embedUrl}" 
-                                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
-                                loading="lazy">
-                            </iframe>
+                            <iframe src="${embedUrl}" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
                         </div>
                     `;
+                    // 曲の場合はアルバム名欄を空のdivにしてレイアウトを維持（左寄せにするため）
+                    albumNameHtml = `<div></div>`;
                 }
 
-                // ボタンデザイン刷新
-                cardContent += `
-                    <div class="comment-footer">
-                        <button class="comment-trigger">
-                            <span>💬</span> COMMENT_LOG
-                        </button>
+                // フッター結合 (アルバム名 + ボタン)
+                card.innerHTML = `
+                    ${cardMainContent}
+                    <div class="card-footer">
+                        ${albumNameHtml}
+                        <button class="btn-comment"><span>💬</span> LOG</button>
                     </div>
                 `;
-
-                card.innerHTML = cardContent;
                 
-                const btn = card.querySelector('.comment-trigger');
-                btn.addEventListener('click', () => {
-                    openModal(item.comment);
-                });
-
+                card.querySelector('.btn-comment').addEventListener('click', () => openModal(item.comment));
                 grid.appendChild(card);
             });
         });
 
+        // スクロールアニメーション & モーダル制御
+        const observer = new IntersectionObserver((entries, obs) => {
+            entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); obs.unobserve(entry.target); } });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.card, .section-header').forEach(el => observer.observe(el));
 
-        // ★スクロールアニメーション制御★
-        const observerOptions = {
-            root: null,
-            rootMargin: '0px',
-            threshold: 0.1 
-        };
-
-        const observer = new IntersectionObserver((entries, observer) => {
-            let delayCounter = 0;
-            entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                    // タイトルかカードかで遅延を調整
-                    const isTitle = entry.target.classList.contains('section-title');
-                    const delay = isTitle ? 0 : delayCounter * 100;
-                    
-                    setTimeout(() => {
-                        entry.target.classList.add('visible');
-                    }, delay);
-                    
-                    if(!isTitle) delayCounter++; 
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, observerOptions);
-
-        document.querySelectorAll('.card, .section-title').forEach(el => {
-            observer.observe(el);
-        });
-
-
-        // ★モーダル制御★
-        function openModal(commentText) {
-            modalMessage.textContent = commentText || "NO_DATA_FOUND..."; 
-            modal.classList.add('active');
-        }
-
-        function closeModal() {
-            modal.classList.remove('active');
-        }
-
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal || e.target.classList.contains('modal-wrapper')) {
-                closeModal();
-            }
-        });
-
+        function openModal(text) { modalMessage.textContent = text || "NO DATA..."; modal.classList.add('active'); }
+        function closeModal() { modal.classList.remove('active'); }
+        modal.addEventListener('click', e => { if(e.target === modal || e.target.classList.contains('modal-container')) closeModal(); });
     </script>
 </body>
 </html>
