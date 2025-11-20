@@ -209,4 +209,397 @@
             height: 100%;
             display: flex;
             flex-direction: column;
-            justify-content:
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        .playlist-placeholder.has-image .playlist-content {
+            background: rgba(0, 0, 0, 0.3);
+            opacity: 0.7;
+        }
+
+        .playlist-placeholder.has-image:hover .playlist-content {
+            background: rgba(0, 0, 0, 0.6);
+            opacity: 1;
+        }
+
+        .playlist-placeholder.no-image:hover {
+            transform: scale(0.98);
+            box-shadow: inset 0 0 30px rgba(0, 172, 193, 0.5);
+        }
+
+        .playlist-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            text-shadow: 0 0 20px rgba(0, 172, 193, 0.8);
+        }
+
+        .playlist-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .playlist-btn {
+            padding: 10px 25px;
+            background: var(--text-accent);
+            color: white;
+            border-radius: 30px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .comment-footer {
+            margin-top: auto;
+            display: flex;
+            justify-content: flex-end;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            padding-top: 15px;
+        }
+
+        .comment-trigger {
+            background: transparent;
+            border: 2px solid var(--text-accent);
+            color: var(--text-accent);
+            border-radius: 50px;
+            padding: 8px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .comment-trigger:hover {
+            background: var(--text-accent);
+            color: #fff;
+            box-shadow: 0 5px 15px rgba(0, 172, 193, 0.4);
+        }
+
+        /* --- モーダル (ノイズ音声吹き出しデザイン) --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 20, 30, 0.6); /* 少し暗めの背景 */
+            backdrop-filter: blur(4px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            max-width: 600px;
+            width: 90%;
+        }
+
+        /* アイコン（ブラウン管） */
+        .modal-icon {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            z-index: 2;
+            filter: drop-shadow(0 0 15px rgba(0, 172, 193, 0.6));
+            /* 喋っているように少し震えるアニメーション */
+            animation: talkShake 0.2s infinite alternate; 
+        }
+
+        @keyframes talkShake {
+            from { transform: translateY(0) rotate(0deg); }
+            to { transform: translateY(-2px) rotate(1deg); }
+        }
+
+        /* 吹き出し本体 */
+        .modal-content {
+            /* ノイズ背景の生成 */
+            background-color: #111;
+            background-image: 
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(255, 255, 255, 0.05) 2px,
+                    rgba(255, 255, 255, 0.05) 4px
+                );
+            border: 3px solid #fff;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 20px; /* アイコンとの距離 */
+            width: 100%;
+            text-align: left; /* 端末っぽく左揃え */
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            
+            /* デジタルテキスト風 */
+            color: #00ff41; /* ハッカーグリーン（もしくは白 #fff でもOK） */
+            font-family: var(--font-mono);
+            text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+            
+            transform: scale(0.9);
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* 吹き出しのしっぽ */
+        .modal-content::after {
+            content: '';
+            position: absolute;
+            top: -15px; /* 上に突き出す */
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 0 15px 15px 15px;
+            border-style: solid;
+            border-color: transparent transparent #fff transparent; /* 枠線 */
+            z-index: 1;
+        }
+        /* しっぽの中身（黒く塗りつぶす） */
+        .modal-content::before {
+            content: '';
+            position: absolute;
+            top: -11px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 0 12px 12px 12px;
+            border-style: solid;
+            border-color: transparent transparent #111 transparent;
+            z-index: 2;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            /* 文字が一文字ずつ出ているような演出（今回はCSSアニメで点滅カーソルのみ） */
+        }
+
+        .modal-text::after {
+            content: '▮';
+            animation: blink 1s infinite;
+            margin-left: 5px;
+            opacity: 0.8;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .close-btn {
+            display: block;
+            margin: 0 auto;
+            background-color: transparent;
+            color: #fff;
+            border: 1px solid #fff;
+            padding: 8px 30px;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .close-btn:hover {
+            background-color: #fff;
+            color: #000;
+            box-shadow: 0 0 15px rgba(255,255,255,0.8);
+        }
+
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <img src="icon.png" alt="Creator Icon" class="creator-icon">
+        <div class="title-area">
+            <h1>AI書記による<br>AI実験場</h1>
+            <div class="subtitle">EXPERIMENTAL MUSIC ARCHIVE</div>
+        </div>
+    </header>
+
+    <div class="container" id="content-grid"></div>
+
+    <div class="modal-overlay" id="modal">
+        <div class="modal-wrapper">
+            <img src="icon.png" alt="Creator Icon" class="modal-icon">
+            <div class="modal-content">
+                <p class="modal-text" id="modal-message"></p>
+                <button class="close-btn" onclick="closeModal()">CLOSE_CONNECTION</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =========================================================
+        // ★★★ データ編集エリア ★★★
+        // =========================================================
+        
+        const contents = [
+            {
+                url: "https://suno.com/embed/8500a1c3-55c6-4a8f-ae01-49146328fcda", 
+                comment: "空白同盟のメインテーマソングとして制作しました。改めて聞くと流石に曲調が古いかも。"
+            },
+            {
+                url: "https://suno.com/embed/c07949a8-f10a-46c0-a147-2561d983558d", 
+                comment: "破壊的電波ソングテスト作の中で現時点でのお気に入りです。"
+            },
+            {
+                url: "https://suno.com/playlist/d2cdf5aa-ebc5-449e-a28e-030bea80c162",
+                comment: "空白同盟の音楽ゲームを作りたいと思い、制作中のプレイリストです。",
+                image: "playlist_bg1.jpg" 
+            },
+            {
+                url: "https://suno.com/playlist/3332134a-a941-4183-9232-35e33e31bd47",
+                comment: "ちょっとバトルっぽいインストアルバムができたので。戦場的なイメージです。"
+            },
+            {
+                url: "https://suno.com/playlist/ecc1ec13-ce37-425f-a21a-4fb8c8e526ce",
+                comment: "TRPGダブルクロス3rdを意識した、熱血系バトルインストアルバムです。"
+            },
+            {
+                url: "https://suno.com/playlist/b1b02fb9-6200-442a-8f3f-8a6cc8aba409",
+                comment: "ニディガの「きゅびびびびずむ」のような音楽破壊系電波ソングは、SUNOAIで作れるのか？　という実験ガチャ置き場です。"
+            },
+            {
+                url: "https://suno.com/playlist/72db9808-6aca-4dec-8e4e-bab7c0893d01",
+                comment: "好きな曲調が古いことに気付いたので、令和ニュアンスを足していくチャレンジガチャ置き場です。"
+            }
+        ];
+
+        // =========================================================
+        // ロジック部分
+        // =========================================================
+
+        const grid = document.getElementById('content-grid');
+        const modal = document.getElementById('modal');
+        const modalMessage = document.getElementById('modal-message');
+
+        // カード生成
+        contents.forEach((item, index) => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            // indexごとの遅延はJavascriptではなく、Observerで制御するためここでは設定しません
+
+            // プレイリストの場合
+            if (item.url.includes('/playlist/')) {
+                const hasImage = item.image ? 'has-image' : 'no-image';
+                const bgStyle = item.image ? `style="background-image: url('${item.image}');"` : '';
+
+                card.innerHTML = `
+                    <a href="${item.url}" target="_blank" class="playlist-placeholder ${hasImage}" ${bgStyle}>
+                        <div class="playlist-content">
+                            <div class="playlist-icon">🎵</div>
+                            <div class="playlist-title">Open Playlist</div>
+                            <div class="playlist-btn">▶ Play on Suno</div>
+                        </div>
+                    </a>
+                    <div class="comment-footer">
+                        <button class="comment-trigger" onclick="openModal(${index})">
+                            💬 Comment
+                        </button>
+                    </div>
+                `;
+            } else {
+                // 通常の曲の場合
+                let embedUrl = item.url;
+                if (!embedUrl.includes('/embed/')) {
+                   embedUrl = embedUrl.replace('suno.com/song/', 'suno.com/embed/');
+                }
+
+                card.innerHTML = `
+                    <div class="iframe-container">
+                        <iframe 
+                            src="${embedUrl}" 
+                            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+                            loading="lazy">
+                        </iframe>
+                    </div>
+                    <div class="comment-footer">
+                        <button class="comment-trigger" onclick="openModal(${index})">
+                            💬 Comment
+                        </button>
+                    </div>
+                `;
+            }
+            grid.appendChild(card);
+        });
+
+        // ★スクロールアニメーション制御 (Intersection Observer) ★
+        // 画面に入ってきた要素を監視し、順番にクラスを付与して表示させる
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1 // 10%見えたら発火
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            let delayCounter = 0; // 同時に見えた要素に時差をつけるためのカウンタ
+
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    // 画面に入った要素に対して
+                    setTimeout(() => {
+                        entry.target.classList.add('visible');
+                    }, delayCounter * 100); // 0.1秒ずつずらす
+
+                    delayCounter++; 
+                    observer.unobserve(entry.target); // 一度表示したら監視終了
+                }
+            });
+        }, observerOptions);
+
+        // 全てのカードを監視対象に追加
+        document.querySelectorAll('.card').forEach(card => {
+            observer.observe(card);
+        });
+
+
+        // ★モーダル制御★
+        function openModal(index) {
+            const comment = contents[index].comment;
+            // テキストをセット（本当は一文字ずつ表示したい場合はここでJS処理を追加できます）
+            modalMessage.textContent = comment || "NO_DATA..."; 
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+        }
+
+        modal.addEventListener('click', (e) => {
+            // 背景クリックまたはmodal-wrapperクリックで閉じる
+            if (e.target === modal || e.target.classList.contains('modal-wrapper')) {
+                closeModal();
+            }
+        });
+
+    </script>
+</body>
+</html>
