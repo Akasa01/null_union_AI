@@ -7,12 +7,11 @@
     <style>
         /* --- デザイン設定 (CSS) --- */
         :root {
-            /* カラーパレット: 未来的な空色・爽やか */
             --bg-gradient: linear-gradient(135deg, #E0F7FA 0%, #80DEEA 100%);
             --glass-bg: rgba(255, 255, 255, 0.65);
             --glass-border: rgba(255, 255, 255, 0.8);
             --text-main: #37474F;
-            --text-accent: #00ACC1; /* 鮮やかなシアンブルー */
+            --text-accent: #00ACC1;
             --shadow-soft: 0 10px 30px rgba(0, 172, 193, 0.15);
             --shadow-strong: 0 20px 40px rgba(0, 131, 143, 0.25);
             --font-main: 'Helvetica Neue', Arial, sans-serif;
@@ -22,14 +21,13 @@
             margin: 0;
             padding: 0;
             background: var(--bg-gradient);
-            background-attachment: fixed; /* 背景固定で奥行きを出す */
+            background-attachment: fixed;
             color: var(--text-main);
             font-family: var(--font-main);
             min-height: 100vh;
             overflow-x: hidden;
         }
 
-        /* --- ヘッダーエリア --- */
         header {
             display: flex;
             align-items: center;
@@ -43,18 +41,13 @@
             animation: slideInLeft 1s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
-        /* 特大アイコン (透過対応・修正済み) */
         .creator-icon {
             width: 220px;
             height: 220px;
             object-fit: contain;
             margin-right: 40px;
-            /* 黒背景を削除しました */
             background-color: transparent; 
-            
-            /* 四角い影ではなく、画像の形に沿った影に変更 */
             filter: drop-shadow(0 20px 30px rgba(0, 131, 143, 0.4));
-            
             transition: transform 0.4s ease, filter 0.4s ease;
             flex-shrink: 0;
             z-index: 10;
@@ -65,7 +58,6 @@
             filter: drop-shadow(0 30px 50px rgba(0, 131, 143, 0.6));
         }
 
-        /* タイトル周り */
         .title-area {
             display: flex;
             flex-direction: column;
@@ -92,7 +84,6 @@
             letter-spacing: 0.1em;
         }
 
-        /* レスポンシブ対応 */
         @media (max-width: 768px) {
             header {
                 flex-direction: column;
@@ -110,7 +101,6 @@
             }
         }
 
-        /* --- コンテンツエリア --- */
         .container {
             width: 90%;
             max-width: 1400px;
@@ -147,7 +137,7 @@
             height: 380px;
             border-radius: 16px;
             overflow: hidden;
-            background: #f0f0f0; /* 読み込み中の色 */
+            background: #f0f0f0;
             margin-bottom: 15px;
             box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
         }
@@ -187,7 +177,6 @@
             box-shadow: 0 5px 15px rgba(0, 172, 193, 0.4);
         }
 
-        /* --- モーダル --- */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -233,8 +222,6 @@
             object-fit: contain;
             margin-top: -90px;
             margin-bottom: 20px;
-            
-            /* モーダル内のアイコンも透過・影対応 */
             background: transparent;
             filter: drop-shadow(0 10px 15px rgba(0,0,0,0.2));
         }
@@ -297,11 +284,12 @@
     <script>
         // =========================================================
         // ★★★ データ編集エリア ★★★
+        // 注意: プレイリストが404(白画面)になる場合は、Sunoで「Public」に設定するか、
+        // Sunoの「Share」→「Embed」から取得したURLをここに貼り付けてください。
         // =========================================================
         
         const contents = [
             {
-                // 以前ご案内した通り、ここの2つはEmbedリンクへの書き換え推奨です
                 url: "https://suno.com/embed/8500a1c3-55c6-4a8f-ae01-49146328fcda", 
                 comment: "空白同盟のメインテーマソングとして制作しました。改めて聞くと流石に曲調が古いかも。"
             },
@@ -310,7 +298,6 @@
                 comment: "破壊的電波ソングテスト作の中で現時点でのお気に入りです。"
             },
             {
-                // プレイリストは自動変換されます
                 url: "https://suno.com/playlist/d2cdf5aa-ebc5-449e-a28e-030bea80c162",
                 comment: "空白同盟の音楽ゲームを作りたいと思い、制作中のプレイリストです。"
             },
@@ -340,12 +327,17 @@
         const modal = document.getElementById('modal');
         const modalMessage = document.getElementById('modal-message');
 
-        // ★★★ ここが今回の修正ポイントです ★★★
+        // ★URL変換ロジックの修正版★
         function convertToEmbedUrl(originalUrl) {
+            // すでにEmbed形式なら何もしない
             if (originalUrl.includes('/embed/')) return originalUrl;
-            // 修正: 「/playlist/」を「/embed/」に変換するように変更しました。
-            // 以前は「/embed/playlist/」にしていたため404になっていました。
-            if (originalUrl.includes('/playlist/')) return originalUrl.replace('/playlist/', '/embed/');
+            
+            // プレイリストの場合: /playlist/ を /embed/playlist/ に変換します
+            // これで黒い画面は直りますが、プレイリストがPrivateだと白い404になります。
+            if (originalUrl.includes('/playlist/')) {
+                return originalUrl.replace('/playlist/', '/embed/playlist/');
+            }
+            
             return originalUrl;
         }
 
@@ -357,7 +349,7 @@
 
             let alertMsg = "";
             if (embedUrl.includes('/s/')) {
-                alertMsg = `<div style="color:red; font-size:0.8rem; padding:10px;">※この曲を表示するには、コード内のURLを「Embed URL」に書き換えてください。</div>`;
+                alertMsg = `<div style="color:red; font-size:0.8rem; padding:10px;">※Shareリンクは表示できません。Embed URLを使用してください。</div>`;
             }
 
             card.innerHTML = `
