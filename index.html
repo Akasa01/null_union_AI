@@ -303,32 +303,32 @@
             {
                 // 以前ご案内した通り、ここの2つはEmbedリンクへの書き換え推奨です
                 url: "https://suno.com/embed/8500a1c3-55c6-4a8f-ae01-49146328fcda", 
-                comment: "初期の実験作です。メロディラインが独特でお気に入り。"
+                comment: "空白同盟のメインテーマソングとして制作しました。改めて聞くと流石に曲調が古いかも。"
             },
             {
                 url: "https://suno.com/embed/c07949a8-f10a-46c0-a147-2561d983558d", 
-                comment: "AIによるボーカルの表現力をテストした一曲。"
+                comment: "破壊的電波ソングテスト作の中で現時点でのお気に入りです。"
             },
             {
                 // プレイリストは自動変換されます
                 url: "https://suno.com/playlist/d2cdf5aa-ebc5-449e-a28e-030bea80c162",
-                comment: "夜のドライブで聴きたくなるようなセットリストを作成しました。"
+                comment: "空白同盟の音楽ゲームを作りたいと思い、制作中のプレイリストです。"
             },
             {
                 url: "https://suno.com/playlist/3332134a-a941-4183-9232-35e33e31bd47",
-                comment: "アップテンポな曲を集めて、作業用BGMとしてまとめています。"
+                comment: "ちょっとバトルっぽいインストアルバムができたので。戦場的なイメージです。"
             },
             {
                 url: "https://suno.com/playlist/ecc1ec13-ce37-425f-a21a-4fb8c8e526ce",
-                comment: "少し実験的なコード進行を多用したシリーズ。"
+                comment: "TRPGダブルクロス3rdを意識した、熱血系バトルインストアルバムです。"
             },
             {
                 url: "https://suno.com/playlist/b1b02fb9-6200-442a-8f3f-8a6cc8aba409",
-                comment: "アンビエント・チルアウト系のまとめです。"
+                comment: "ニディガの「きゅびびびびずむ」のような音楽破壊系電波ソングは、SUNOAIで作れるのか？　という実験ガチャ置き場です。"
             },
             {
                 url: "https://suno.com/playlist/72db9808-6aca-4dec-8e4e-bab7c0893d01",
-                comment: "最新の生成結果を集めたプレイリスト。日々進化しています。"
+                comment: "好きな曲調が古いことに気付いたので、令和ニュアンスを足していくチャレンジガチャ置き場です。"
             }
         ];
 
@@ -340,9 +340,12 @@
         const modal = document.getElementById('modal');
         const modalMessage = document.getElementById('modal-message');
 
+        // ★★★ ここが今回の修正ポイントです ★★★
         function convertToEmbedUrl(originalUrl) {
             if (originalUrl.includes('/embed/')) return originalUrl;
-            if (originalUrl.includes('/playlist/')) return originalUrl.replace('/playlist/', '/embed/playlist/');
+            // 修正: 「/playlist/」を「/embed/」に変換するように変更しました。
+            // 以前は「/embed/playlist/」にしていたため404になっていました。
+            if (originalUrl.includes('/playlist/')) return originalUrl.replace('/playlist/', '/embed/');
             return originalUrl;
         }
 
