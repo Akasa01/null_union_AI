@@ -148,28 +148,32 @@
         }
         @keyframes bgShift { from { background-position: 0 0; } to { background-position: 60px 60px; } }
 
-        /* --- ホバーで表示させる中身 --- */
+        /* --- ホバーで表示させる中身 (修正版) --- */
         .playlist-inner {
             position: absolute; inset: 0; z-index: 1;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            background: rgba(1, 87, 155, 0.2);
+            /* ★通常時は透明 */
+            background: transparent; 
             transition: all 0.4s ease;
         }
         .pl-content-group {
             display: flex; flex-direction: column; align-items: center;
-            opacity: 0.3; 
+            /* ★通常時は見えない */
+            opacity: 0; 
             transition: opacity 0.4s ease;
         }
 
+        /* ホバー時の挙動 */
         .playlist-card:hover .playlist-inner {
-            background: rgba(1, 87, 155, 0.7);
+            background: rgba(1, 87, 155, 0.7); /* ホバー時に暗くなる */
             backdrop-filter: blur(3px);
         }
         .playlist-card:hover .pl-content-group {
-            opacity: 1;
+            opacity: 1; /* ホバー時に表示 */
             transform: scale(1.05);
         }
         
+        /* アイコン・文字スタイル */
         .pl-icon { font-size: 4rem; margin-bottom: 15px; filter: drop-shadow(0 0 15px var(--accent-cyan)); }
         .pl-text { font-family: var(--font-en); font-weight: 700; font-size: 1.4rem; margin-bottom: 15px; letter-spacing: 1px; text-shadow: 0 2px 5px rgba(0,0,0,0.3); }
         .pl-btn {
@@ -316,7 +320,7 @@
                         url: "https://suno.com/playlist/72db9808-6aca-4dec-8e4e-bab7c0893d01",
                         comment: "好きな曲調が古いことに気付いたので、令和ニュアンスを足していくチャレンジガチャ置き場です。",
                         image: "reiwatyare.jpeg",
-                        albumName: "令和的キャッチーソング実験場" 
+                        albumName: "令和的キャッチ―ソング実験場" 
                     }
                 ]
             }
@@ -391,14 +395,14 @@
             });
         });
 
-        // ★スクロール連動・スタッガーアニメーション (再実装部分) ★
+        // ★スクロール連動・スタッガーアニメーション (再実装) ★
         const observer = new IntersectionObserver((entries, obs) => {
-            let delayCounter = 0; // 0からカウントスタート
+            let delayCounter = 0; // 表示遅延用のカウンタ
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    // ヘッダーとカードで遅延処理を分ける
+                    // ヘッダーはすぐ表示、カードは遅延させる
                     const isHeader = entry.target.classList.contains('section-header');
-                    const delay = isHeader ? 0 : delayCounter * 100; // カードなら0.1秒ずつずらす
+                    const delay = isHeader ? 0 : delayCounter * 100; // カード1枚につき0.1秒ずらす
 
                     setTimeout(() => {
                         entry.target.classList.add('visible');
