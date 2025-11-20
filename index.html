@@ -29,11 +29,11 @@
             overflow-x: hidden;
         }
 
-        /* --- ヘッダーエリア (大幅変更) --- */
+        /* --- ヘッダーエリア --- */
         header {
             display: flex;
-            align-items: center; /* 垂直方向中央揃え */
-            justify-content: flex-start; /* 左寄せ */
+            align-items: center;
+            justify-content: flex-start;
             padding: 40px 5%;
             background: linear-gradient(to right, rgba(255,255,255,0.8), rgba(255,255,255,0));
             backdrop-filter: blur(5px);
@@ -43,23 +43,26 @@
             animation: slideInLeft 1s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
-        /* 特大アイコン */
+        /* 特大アイコン (透過対応・修正済み) */
         .creator-icon {
-            width: 220px; /* かなり大きく */
+            width: 220px;
             height: 220px;
-            object-fit: contain; /* 全体を表示 */
-            border-radius: 30px; /* モダンな角丸 */
-            background-color: #000;
-            box-shadow: var(--shadow-strong);
-            margin-right: 40px; /* タイトルとの距離 */
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
-            flex-shrink: 0; /* 縮まないようにする */
+            object-fit: contain;
+            margin-right: 40px;
+            /* 黒背景を削除しました */
+            background-color: transparent; 
+            
+            /* 四角い影ではなく、画像の形に沿った影に変更 */
+            filter: drop-shadow(0 20px 30px rgba(0, 131, 143, 0.4));
+            
+            transition: transform 0.4s ease, filter 0.4s ease;
+            flex-shrink: 0;
             z-index: 10;
         }
 
         .creator-icon:hover {
             transform: scale(1.02) rotate(-2deg);
-            box-shadow: 0 30px 60px rgba(0, 131, 143, 0.4);
+            filter: drop-shadow(0 30px 50px rgba(0, 131, 143, 0.6));
         }
 
         /* タイトル周り */
@@ -70,7 +73,7 @@
         }
 
         h1 {
-            font-size: 3.5rem; /* 特大文字 */
+            font-size: 3.5rem;
             font-weight: 800;
             margin: 0;
             line-height: 1.1;
@@ -89,7 +92,7 @@
             letter-spacing: 0.1em;
         }
 
-        /* レスポンシブ対応: スマホでは縦並びにする */
+        /* レスポンシブ対応 */
         @media (max-width: 768px) {
             header {
                 flex-direction: column;
@@ -113,12 +116,11 @@
             max-width: 1400px;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); /* カード幅を少し広めに */
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
             gap: 40px;
             padding-bottom: 80px;
         }
 
-        /* カードデザイン (グラスモーフィズム) */
         .card {
             background: var(--glass-bg);
             backdrop-filter: blur(12px);
@@ -139,14 +141,13 @@
             background: rgba(255, 255, 255, 0.8);
         }
 
-        /* Iframeコンテナ */
         .iframe-container {
             position: relative;
             width: 100%;
-            height: 380px; /* Sunoプレイヤーの高さ */
+            height: 380px;
             border-radius: 16px;
             overflow: hidden;
-            background: #f0f0f0;
+            background: #f0f0f0; /* 読み込み中の色 */
             margin-bottom: 15px;
             box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
         }
@@ -157,9 +158,8 @@
             border: none;
         }
 
-        /* コメントボタン */
         .comment-footer {
-            margin-top: auto; /* 下端に寄せる */
+            margin-top: auto;
             display: flex;
             justify-content: flex-end;
             border-top: 1px solid rgba(0,0,0,0.05);
@@ -187,14 +187,14 @@
             box-shadow: 0 5px 15px rgba(0, 172, 193, 0.4);
         }
 
-        /* --- モーダル (ポップアップ) --- */
+        /* --- モーダル --- */
         .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(224, 247, 250, 0.85); /* 薄い青のオーバーレイ */
+            background: rgba(224, 247, 250, 0.85);
             backdrop-filter: blur(8px);
             display: flex;
             justify-content: center;
@@ -230,13 +230,13 @@
         .modal-icon {
             width: 100px;
             height: 100px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 4px solid var(--text-accent);
-            margin-top: -90px; /* 枠からはみ出す演出 */
-            background: #000;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            object-fit: contain;
+            margin-top: -90px;
             margin-bottom: 20px;
+            
+            /* モーダル内のアイコンも透過・影対応 */
+            background: transparent;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.2));
         }
 
         .modal-text {
@@ -263,7 +263,6 @@
             transform: scale(1.05);
         }
 
-        /* --- アニメーション定義 --- */
         @keyframes slideInLeft {
             from { opacity: 0; transform: translateX(-50px); }
             to { opacity: 1; transform: translateX(0); }
@@ -278,7 +277,7 @@
 <body>
 
     <header>
-        <img src="ブラウン管_左横10度.jpg" alt="Creator Icon" class="creator-icon">
+        <img src="icon.png" alt="Creator Icon" class="creator-icon">
         <div class="title-area">
             <h1>AI書記による<br>AI実験場</h1>
             <div class="subtitle">EXPERIMENTAL MUSIC ARCHIVE</div>
@@ -289,7 +288,7 @@
 
     <div class="modal-overlay" id="modal">
         <div class="modal-content">
-            <img src="ブラウン管_左横10度.jpg" alt="Creator Icon" class="modal-icon">
+            <img src="icon.png" alt="Creator Icon" class="modal-icon">
             <p class="modal-text" id="modal-message"></p>
             <button class="close-btn" onclick="closeModal()">閉じる</button>
         </div>
@@ -302,18 +301,16 @@
         
         const contents = [
             {
-                // 【重要】ここは短縮リンクのため、自動変換できません。
-                // Sunoの画面で「Share」→「Embed」を選び、表示されるURL(例: https://suno.com/embed/xxxx)に書き換えてください。
+                // 以前ご案内した通り、ここの2つはEmbedリンクへの書き換え推奨です
                 url: "https://suno.com/embed/8500a1c3-55c6-4a8f-ae01-49146328fcda", 
                 comment: "初期の実験作です。メロディラインが独特でお気に入り。"
             },
             {
-                // 【重要】ここもEmbed用URLへの書き換えを推奨します。
                 url: "https://suno.com/embed/c07949a8-f10a-46c0-a147-2561d983558d", 
                 comment: "AIによるボーカルの表現力をテストした一曲。"
             },
             {
-                // プレイリストURL (自動変換されます)
+                // プレイリストは自動変換されます
                 url: "https://suno.com/playlist/d2cdf5aa-ebc5-449e-a28e-030bea80c162",
                 comment: "夜のドライブで聴きたくなるようなセットリストを作成しました。"
             },
@@ -336,39 +333,25 @@
         ];
 
         // =========================================================
-        // ロジック部分 (自動処理)
+        // ロジック部分
         // =========================================================
 
         const grid = document.getElementById('content-grid');
         const modal = document.getElementById('modal');
         const modalMessage = document.getElementById('modal-message');
 
-        // SunoのURLを埋め込み形式に変換する関数
         function convertToEmbedUrl(originalUrl) {
-            // すでにembed形式なら何もしない
-            if (originalUrl.includes('/embed/')) {
-                return originalUrl;
-            }
-            
-            // プレイリストURLの変換処理
-            // パターン: suno.com/playlist/[UUID] -> suno.com/embed/playlist/[UUID]
-            if (originalUrl.includes('/playlist/')) {
-                return originalUrl.replace('/playlist/', '/embed/playlist/');
-            }
-
-            // 注意: suno.com/s/xxx (短縮URL) はクライアント側でID解決ができないため、
-            // そのまま返します（結果として表示されない可能性があります）。
+            if (originalUrl.includes('/embed/')) return originalUrl;
+            if (originalUrl.includes('/playlist/')) return originalUrl.replace('/playlist/', '/embed/playlist/');
             return originalUrl;
         }
 
-        // コンテンツ生成
         contents.forEach((item, index) => {
             const embedUrl = convertToEmbedUrl(item.url);
             const card = document.createElement('div');
             card.className = 'card';
             card.style.animationDelay = `${index * 0.15}s`;
 
-            // 短縮リンク(s/)が含まれている場合の警告表示（編集者用）
             let alertMsg = "";
             if (embedUrl.includes('/s/')) {
                 alertMsg = `<div style="color:red; font-size:0.8rem; padding:10px;">※この曲を表示するには、コード内のURLを「Embed URL」に書き換えてください。</div>`;
@@ -392,7 +375,6 @@
             grid.appendChild(card);
         });
 
-        // モーダル操作
         function openModal(index) {
             const comment = contents[index].comment;
             modalMessage.textContent = comment || "コメントはありません";
