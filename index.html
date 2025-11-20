@@ -58,6 +58,7 @@
             display: flex; align-items: center; padding: 40px 5%;
             background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(15px);
             border-bottom: 1px solid #fff; box-shadow: 0 5px 30px rgba(0, 188, 212, 0.15);
+            animation: slideInDown 1s cubic-bezier(0.23, 1, 0.32, 1);
         }
         .creator-icon {
             width: 160px; height: 160px; object-fit: contain; margin-right: 30px; flex-shrink: 0;
@@ -90,6 +91,7 @@
             width: 90%; max-width: 1200px; margin: 0 auto; padding-bottom: 120px;
             display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 50px;
         }
+        
         .section-header {
             grid-column: 1 / -1; margin-top: 70px; margin-bottom: 30px;
             display: flex; align-items: baseline; position: relative; padding-bottom: 15px;
@@ -98,6 +100,7 @@
         .section-header.visible { opacity: 1; transform: translateX(0); }
         .section-header::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(to right, var(--accent-cyan), transparent); }
         .section-header::before { content: ''; position: absolute; bottom: -4px; left: 0; width: 80px; height: 4px; background: var(--accent-cyan); box-shadow: 0 0 15px var(--accent-cyan); border-radius: 2px; }
+        
         .sec-num {
             font-family: var(--font-en); font-size: 4rem; font-weight: 800; color: transparent; -webkit-text-stroke: 2px var(--accent-deep);
             line-height: 0.8; margin-right: 20px; text-shadow: 3px 3px 0 rgba(255,255,255,0.8); position: relative; top: 5px;
@@ -110,9 +113,14 @@
             border: 2px solid var(--glass-border); border-radius: 24px; padding: 25px;
             box-shadow: 0 15px 35px rgba(0, 47, 108, 0.15), inset 0 0 20px rgba(255,255,255,0.5);
             display: flex; flex-direction: column;
-            opacity: 0; transform: translateY(40px); transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            
+            /* アニメーション初期状態 */
+            opacity: 0; 
+            transform: translateY(40px); 
+            transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1), transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s, border-color 0.3s;
         }
         .card.visible { opacity: 1; transform: translateY(0); }
+        
         .card:hover {
             transform: translateY(-10px) scale(1.02); box-shadow: 0 25px 50px rgba(0, 188, 212, 0.25), inset 0 0 30px rgba(255,255,255,0.8); border-color: #fff;
         }
@@ -129,12 +137,10 @@
             border: 1px solid rgba(255,255,255,0.5);
             background: var(--accent-deep);
         }
-        /* 背景動画・画像用コンテナ */
         .pl-bg-media {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             object-fit: cover; z-index: 0;
         }
-        /* 画像なしデフォルト背景 */
         .playlist-card.default-bg .pl-bg-media { display: none; }
         .playlist-card.default-bg {
             background-image: linear-gradient(45deg, rgba(0,188,212,0.15) 25%, transparent 25%, transparent 50%, rgba(0,188,212,0.15) 50%, rgba(0,188,212,0.15) 75%, transparent 75%, transparent);
@@ -142,34 +148,28 @@
         }
         @keyframes bgShift { from { background-position: 0 0; } to { background-position: 60px 60px; } }
 
-        /* --- ホバーで表示させる中身 (うっすら→くっきり) --- */
+        /* --- ホバーで表示させる中身 --- */
         .playlist-inner {
             position: absolute; inset: 0; z-index: 1;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            background: rgba(1, 87, 155, 0.2); /* 通常時は薄いオーバーレイ */
+            background: rgba(1, 87, 155, 0.2);
             transition: all 0.4s ease;
-            
-            /* ★修正ポイント: コンテンツの透明度制御 */
         }
-        
-        /* 中身（アイコン、文字、ボタン）をグループ化 */
         .pl-content-group {
             display: flex; flex-direction: column; align-items: center;
-            opacity: 0.3; /* ★通常時はうっすら (30%) */
+            opacity: 0.3; 
             transition: opacity 0.4s ease;
         }
 
-        /* ホバー時の挙動 */
         .playlist-card:hover .playlist-inner {
-            background: rgba(1, 87, 155, 0.7); /* 背景を暗くして文字を読みやすく */
+            background: rgba(1, 87, 155, 0.7);
             backdrop-filter: blur(3px);
         }
         .playlist-card:hover .pl-content-group {
-            opacity: 1; /* ★ホバー時にくっきり (100%) */
-            transform: scale(1.05); /* 少し拡大する演出 */
+            opacity: 1;
+            transform: scale(1.05);
         }
         
-        /* アイコン・文字スタイル */
         .pl-icon { font-size: 4rem; margin-bottom: 15px; filter: drop-shadow(0 0 15px var(--accent-cyan)); }
         .pl-text { font-family: var(--font-en); font-weight: 700; font-size: 1.4rem; margin-bottom: 15px; letter-spacing: 1px; text-shadow: 0 2px 5px rgba(0,0,0,0.3); }
         .pl-btn {
@@ -228,6 +228,8 @@
             font-family: var(--font-en); font-weight: 700; font-size: 1rem; cursor: pointer; transition: 0.2s; border-radius: 8px; letter-spacing: 0.1em;
         }
         .modal-close:hover { background: var(--accent-cyan); color: #002f6c; box-shadow: 0 0 25px var(--accent-cyan); }
+        
+        @keyframes slideInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -285,19 +287,19 @@
                     {
                         url: "https://suno.com/playlist/d2cdf5aa-ebc5-449e-a28e-030bea80c162",
                         comment: "空白同盟の音楽ゲームを作りたいと思い、制作中のプレイリストです。",
-                        video: "kuuhakudoumeiOST.mp4", // ★画像を指定する例
+                        image: "playlist_bg1.jpg",
                         albumName: "空白同盟OST - プロトタイプ" 
                     },
                     {
                         url: "https://suno.com/playlist/3332134a-a941-4183-9232-35e33e31bd47",
                         comment: "ちょっとバトルっぽいインストアルバムができたので。戦場的なイメージです。",
-                        // video: "battle_bg.mp4", // ★動画を指定する例 (ファイルがあれば使えます)
-                        albumName: "インスト-battle" 
+                        // video: "battle_bg.mp4", // 動画指定例
+                        albumName: "BATTLE TRAX: Frontline" 
                     },
                     {
                         url: "https://suno.com/playlist/ecc1ec13-ce37-425f-a21a-4fb8c8e526ce",
                         comment: "TRPGダブルクロス3rdを意識した、熱血系バトルインストアルバムです。",
-                        albumName: "インスト-battle-情熱烈風" 
+                        albumName: "X-over Resonance" 
                     }
                 ]
             },
@@ -343,14 +345,12 @@
                 if (item.url.includes('/playlist/')) {
                     // 背景メディアの生成
                     let bgMediaHtml = '';
-                    let cardClass = 'playlist-card default-bg'; // デフォルト
+                    let cardClass = 'playlist-card default-bg';
 
                     if (item.video) {
-                        // 動画がある場合
                         cardClass = 'playlist-card has-video';
                         bgMediaHtml = `<video class="pl-bg-media" src="${item.video}" autoplay loop muted playsinline></video>`;
                     } else if (item.image) {
-                        // 画像がある場合
                         cardClass = 'playlist-card has-image';
                         bgMediaHtml = `<img class="pl-bg-media" src="${item.image}" alt="cover">`;
                     }
@@ -389,9 +389,27 @@
             });
         });
 
+        // ★スクロール連動・スタッガーアニメーション (再実装部分) ★
         const observer = new IntersectionObserver((entries, obs) => {
-            entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); obs.unobserve(entry.target); } });
+            let delayCounter = 0; // 0からカウントスタート
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // ヘッダーとカードで遅延処理を分ける
+                    const isHeader = entry.target.classList.contains('section-header');
+                    const delay = isHeader ? 0 : delayCounter * 100; // カードなら0.1秒ずつずらす
+
+                    setTimeout(() => {
+                        entry.target.classList.add('visible');
+                    }, delay);
+
+                    // カードの場合のみカウンタを進める
+                    if (!isHeader) delayCounter++;
+                    
+                    obs.unobserve(entry.target);
+                }
+            });
         }, { threshold: 0.1 });
+
         document.querySelectorAll('.card, .section-header').forEach(el => observer.observe(el));
 
         function openModal(text) { modalMessage.textContent = text || "NO DATA..."; modal.classList.add('active'); }
