@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI書記によるAI実験場</title>
+    <style>
+        /* --- デザイン設定 (CSS) --- */
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --accent-color: #4db6ac; /* 少しレトロな青緑 */
+            --modal-bg: rgba(255, 255, 255, 0.1);
+            --font-main: 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* ヘッダーエリア */
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .creator-icon {
+            width: 120px;
+            height: 120px;
+            object-fit: contain; /* 画像全体を表示 */
+            border-radius: 20px; /* 角を少し丸く */
+            box-shadow: 0 0 20px rgba(77, 182, 172, 0.3);
+            margin-bottom: 15px;
+            transition: transform 0.3s ease;
+            background-color: #000;
+        }
+
+        .creator-icon:hover {
+            transform: scale(1.05) rotate(-2deg);
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin: 0;
+            letter-spacing: 2px;
+            background: linear-gradient(90deg, #fff, var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* コンテンツグリッド */
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            padding-bottom: 60px;
+        }
+
+        /* 楽曲カード */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+            opacity: 0; /* アニメーション用に最初は透明 */
+            animation: fadeInUp 0.8s forwards;
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.5);
+        }
+
+        /* iframeのレスポンシブ対応 */
+        .iframe-container {
+            position: relative;
+            width: 100%;
+            height: 380px; /* Sunoのプレイヤーに合わせた高さ */
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* コメントボタン */
+        .comment-btn-area {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .comment-trigger {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+            filter: grayscale(100%);
+        }
+
+        .comment-trigger:hover {
+            transform: scale(1.2);
+            filter: grayscale(0%);
+        }
+
+        /* モーダル（ポップアップ） */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-content {
+            background: rgba(30, 30, 30, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 400px;
+            width: 80%;
+            text-align: center;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--accent-color);
+            margin-bottom: 15px;
+        }
+
+        .modal-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .close-btn {
+            background-color: var(--accent-color);
+            color: #000;
+            border: none;
+            padding: 8px 24px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .close-btn:hover {
+            background-color: #fff;
+        }
+
+        /* アニメーション定義 */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <img src="ブラウン管_左横10度.jpg" alt="Creator Icon" class="creator-icon">
+        <h1>AI書記によるAI実験場</h1>
+    </header>
+
+    <div class="container" id="content-grid">
+        </div>
+
+    <div class="modal-overlay" id="modal">
+        <div class="modal-content">
+            <img src="ブラウン管_左横10度.jpg" alt="Creator Icon" class="modal-icon">
+            <p class="modal-text" id="modal-message">コメントがここに表示されます</p>
+            <button class="close-btn" onclick="closeModal()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // =========================================================
+        // ★★★ かんたん編集エリア ★★★
+        // ここにSunoのURLと、一言コメントを追加・編集してください。
+        // URLはSunoの「Share」から取得できるリンク、またはEmbed用リンクです。
+        // =========================================================
+        
+        const contents = [
+            {
+                url: "https://suno.com/embed/kp88ve3rLJMuwlmn", // 曲1
+                comment: "初期の実験作です。メロディラインが独特でお気に入り。"
+            },
+            {
+                url: "https://suno.com/embed/J3RXN4k1iMrMZG1C", // 曲2
+                comment: "AIによるボーカルの表現力をテストした一曲。"
+            },
+            {
+                url: "https://suno.com/embed/d2cdf5aa-ebc5-449e-a28e-030bea80c162", // プレイリスト1
+                comment: "夜のドライブで聴きたくなるようなセットリストを作成しました。"
+            },
+            {
+                url: "https://suno.com/embed/3332134a-a941-4183-9232-35e33e31bd47", // プレイリスト2
+                comment: "アップテンポな曲を集めて、作業用BGMとしてまとめています。"
+            },
+            {
+                url: "https://suno.com/embed/ecc1ec13-ce37-425f-a21a-4fb8c8e526ce", // プレイリスト3
+                comment: "少し実験的なコード進行を多用したシリーズ。"
+            },
+            {
+                url: "https://suno.com/embed/b1b02fb9-6200-442a-8f3f-8a6cc8aba409", // プレイリスト4
+                comment: "アンビエント・チルアウト系のまとめです。"
+            },
+            {
+                url: "https://suno.com/embed/72db9808-6aca-4dec-8e4e-bab7c0893d01", // プレイリスト5
+                comment: "最新の生成結果を集めたプレイリスト。日々進化しています。"
+            }
+        ];
+
+        // =========================================================
+        // システム設定（ここから下は触らなくてOKです）
+        // =========================================================
+
+        const grid = document.getElementById('content-grid');
+        const modal = document.getElementById('modal');
+        const modalMessage = document.getElementById('modal-message');
+
+        // URLの形式を整える関数（ShareリンクをEmbedリンクへ変換する簡易処理）
+        function formatSunoUrl(url) {
+            // すでにembedが含まれていればそのまま
+            if (url.includes('/embed/')) return url;
+            
+            // suno.com/s/xxx のような短縮URLの場合、iframeでうまく動かない場合があります。
+            // 基本的にはユーザー側で「Copy Embed Code」ではなくURLのID部分を使うのが安全ですが、
+            // ここでは提供されたURL構造に合わせてID抽出を試みます。
+            
+            // 注: Sunoの完全な仕様依存ですが、もし表示されない場合は
+            // contentsリストのurlを https://suno.com/embed/[ID] の形式に書き換えてください。
+            return url; 
+        }
+
+        // コンテンツの生成
+        contents.forEach((item, index) => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            // アニメーションの遅延を設定（順番に表示させる）
+            card.style.animationDelay = `${index * 0.1}s`;
+
+            // SunoのURL処理（IDの抽出などが複雑なため、埋め込みURLを直接指定することを推奨しますが、
+            // ここではiframeタグを生成します）
+            
+            // 提示されたURLは通常のリンクのため、以下のようにiframeに埋め込みます。
+            // ※Sunoの仕様変更により、"https://suno.com/embed/ID" の形式が最も安定します。
+            // 上記のcontentsリストでは、提供されたリンクからIDを推測してembed形式に修正済みです。
+
+            card.innerHTML = `
+                <div class="iframe-container">
+                    <iframe 
+                        src="${item.url}" 
+                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+                        loading="lazy">
+                    </iframe>
+                </div>
+                <div class="comment-btn-area">
+                    <button class="comment-trigger" onclick="openModal(${index})">💬</button>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+
+        // モーダルを開く
+        function openModal(index) {
+            const comment = contents[index].comment;
+            modalMessage.textContent = comment || "コメントはありません";
+            modal.classList.add('active');
+        }
+
+        // モーダルを閉じる
+        function closeModal() {
+            modal.classList.remove('active');
+        }
+
+        // 背景クリックでも閉じる
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+
+    </script>
+</body>
+</html>
