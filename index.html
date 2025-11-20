@@ -4,29 +4,100 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI書記によるAI実験場</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
+
     <style>
         /* --- デザイン設定 (CSS) --- */
         :root {
-            --bg-gradient: linear-gradient(135deg, #E0F7FA 0%, #80DEEA 100%);
-            --glass-bg: rgba(255, 255, 255, 0.65);
-            --glass-border: rgba(255, 255, 255, 0.8);
-            --text-main: #37474F;
-            --text-accent: #00ACC1;
-            --shadow-soft: 0 10px 30px rgba(0, 172, 193, 0.15);
-            --shadow-strong: 0 20px 40px rgba(0, 131, 143, 0.25);
-            --font-main: 'Helvetica Neue', Arial, sans-serif;
-            --font-mono: 'Courier New', Courier, monospace; /* サイバー・端末用フォント */
+            /* カラーパレット */
+            --theme-sky: #80DEEA; /* ベースの空色 */
+            --glass-bg: rgba(255, 255, 255, 0.15);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --text-main: #263238;
+            --text-accent: #00E5FF; /* 発光感のあるシアン */
+            --text-sub: #546E7A;
+            
+            /* フォント設定 */
+            --font-tech: 'Orbitron', sans-serif;
+            --font-jp: 'Zen Kaku Gothic New', sans-serif;
+            --font-mono: 'Courier New', Courier, monospace;
         }
 
         body {
             margin: 0;
             padding: 0;
-            background: var(--bg-gradient);
-            background-attachment: fixed;
             color: var(--text-main);
-            font-family: var(--font-main);
+            font-family: var(--font-jp);
             min-height: 100vh;
             overflow-x: hidden;
+            position: relative;
+        }
+
+        /* --- 背景アニメーション (流れる雲) --- */
+        .bg-sky-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -3;
+            background: linear-gradient(to bottom, #4FC3F7, #B3E5FC); /* 青空のグラデーション */
+            overflow: hidden;
+        }
+
+        .bg-clouds {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 200%;
+            height: 100%;
+            z-index: -2;
+            /* CSSで雲のような模様を生成 */
+            background: 
+                radial-gradient(circle at 50% 50%, rgba(255,255,255,0.6) 0%, transparent 20%),
+                radial-gradient(circle at 20% 60%, rgba(255,255,255,0.6) 0%, transparent 30%),
+                radial-gradient(circle at 80% 30%, rgba(255,255,255,0.5) 0%, transparent 25%),
+                radial-gradient(circle at 40% 80%, rgba(255,255,255,0.4) 0%, transparent 35%);
+            background-size: 1000px 800px;
+            opacity: 0.8;
+            animation: flowClouds 60s linear infinite;
+        }
+        
+        /* もう一層雲を重ねて立体感を出す */
+        .bg-clouds-2 {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 200%;
+            height: 100%;
+            z-index: -2;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(255,255,255,0.4) 0%, transparent 20%),
+                radial-gradient(circle at 90% 70%, rgba(255,255,255,0.4) 0%, transparent 30%);
+            background-size: 800px 600px;
+            opacity: 0.6;
+            animation: flowClouds 40s linear infinite reverse; /* 逆方向にゆっくり動く */
+        }
+
+        @keyframes flowClouds {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* 色味調整用のオーバーレイ (不透明度40%程度でテーマカラーを重ねる) */
+        .bg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, rgba(224, 247, 250, 0.4) 0%, rgba(128, 222, 234, 0.4) 100%);
+            backdrop-filter: blur(2px); /* ほんの少しぼかして空気感を出す */
+            pointer-events: none;
         }
 
         /* --- ヘッダー --- */
@@ -35,11 +106,12 @@
             align-items: center;
             justify-content: flex-start;
             padding: 40px 5%;
-            background: linear-gradient(to right, rgba(255,255,255,0.8), rgba(255,255,255,0));
-            backdrop-filter: blur(5px);
+            /* グラスモーフィズム強化 */
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
             margin-bottom: 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.5);
-            box-shadow: var(--shadow-soft);
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
             animation: slideInLeft 1s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
@@ -49,7 +121,7 @@
             object-fit: contain;
             margin-right: 40px;
             background-color: transparent; 
-            filter: drop-shadow(0 20px 30px rgba(0, 131, 143, 0.4));
+            filter: drop-shadow(0 20px 30px rgba(0, 229, 255, 0.3));
             transition: transform 0.4s ease, filter 0.4s ease;
             flex-shrink: 0;
             z-index: 10;
@@ -57,7 +129,7 @@
 
         .creator-icon:hover {
             transform: scale(1.02) rotate(-2deg);
-            filter: drop-shadow(0 30px 50px rgba(0, 131, 143, 0.6));
+            filter: drop-shadow(0 0 40px rgba(0, 229, 255, 0.6)); /* 発光強化 */
         }
 
         .title-area {
@@ -67,23 +139,38 @@
         }
 
         h1 {
-            font-size: 3.5rem;
-            font-weight: 800;
+            font-family: var(--font-jp);
+            font-size: 3.8rem;
+            font-weight: 900;
             margin: 0;
             line-height: 1.1;
-            background: linear-gradient(45deg, #006064, #00ACC1);
+            /* メタリックなグラデーション文字 */
+            background: linear-gradient(135deg, #006064 0%, #00ACC1 50%, #00E5FF 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            letter-spacing: -0.02em;
-            text-shadow: 2px 2px 0px rgba(255,255,255,0.5);
+            letter-spacing: -0.03em;
+            text-shadow: 2px 2px 10px rgba(255,255,255,0.4);
         }
 
         .subtitle {
-            font-size: 1.2rem;
-            color: #546E7A;
-            margin-top: 10px;
-            font-weight: 500;
-            letter-spacing: 0.1em;
+            font-family: var(--font-tech);
+            font-size: 1.4rem;
+            color: var(--text-sub);
+            margin-top: 5px;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+        }
+
+        .subtitle::before {
+            content: '';
+            display: inline-block;
+            width: 30px;
+            height: 2px;
+            background: var(--text-accent);
+            margin-right: 10px;
         }
 
         @media (max-width: 768px) {
@@ -99,7 +186,11 @@
                 height: 160px;
             }
             h1 {
-                font-size: 2.2rem;
+                font-size: 2.5rem;
+            }
+            .subtitle {
+                font-size: 1rem;
+                justify-content: center;
             }
         }
 
@@ -110,62 +201,82 @@
             margin: 0 auto;
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 40px;
-            padding-bottom: 80px;
+            gap: 50px;
+            padding-bottom: 100px;
+            position: relative;
+            z-index: 1;
         }
 
-        /* --- セクションタイトル帯 --- */
+        /* --- 見出しデザイン (未来的・テック風) --- */
         .section-title {
-            grid-column: 1 / -1; /* グリッドの横幅いっぱいに広げる */
-            margin-top: 40px;
-            margin-bottom: 10px;
-            padding: 15px 25px;
+            grid-column: 1 / -1;
+            margin-top: 60px;
+            margin-bottom: 20px;
+            padding: 10px 0;
             
-            /* グラスモーフィズム + デジタル感 */
-            background: rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(10px);
-            border-left: 6px solid var(--text-accent);
-            border-radius: 0 10px 10px 0;
-            
-            font-size: 1.8rem;
-            font-weight: bold;
+            font-family: var(--font-tech); /* 英語フォント優先 */
+            font-size: 2rem;
+            font-weight: 700;
             color: var(--text-main);
             letter-spacing: 0.05em;
-            
-            opacity: 0; /* スクロールアニメーション用 */
-            transform: translateX(-20px);
-            transition: opacity 0.8s, transform 0.8s;
+            text-transform: uppercase;
             
             display: flex;
-            align-items: center;
-        }
-        
-        .section-title::before {
-            content: '//'; /* コードっぽい装飾 */
-            color: var(--text-accent);
-            margin-right: 10px;
-            font-family: var(--font-mono);
-            font-size: 1.2rem;
+            align-items: flex-end;
+            border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+            position: relative;
+
+            opacity: 0;
+            transform: translateX(-30px);
+            transition: opacity 0.8s, transform 0.8s;
         }
 
         .section-title.visible {
             opacity: 1;
             transform: translateX(0);
         }
+        
+        /* ナンバリング装飾 */
+        .section-number {
+            font-size: 3rem;
+            color: rgba(0, 229, 255, 0.2); /* 薄いシアン */
+            font-weight: 900;
+            margin-right: 15px;
+            line-height: 0.8;
+            position: relative;
+            top: 2px;
+        }
+
+        /* 下線の装飾バー */
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100px; /* 短いアクセントライン */
+            height: 2px;
+            background: var(--text-accent);
+            box-shadow: 0 0 10px var(--text-accent);
+        }
+
+        .section-jp-text {
+            font-family: var(--font-jp);
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
 
         /* --- カードデザイン --- */
         .card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.35); /* 透明度アップ */
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
             border-radius: 24px;
             padding: 25px;
-            box-shadow: var(--shadow-soft);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); /* 柔らかい影 */
             display: flex;
             flex-direction: column;
             position: relative;
             
-            /* スクロールアニメーション用設定 */
             opacity: 0;
             transform: translateY(50px);
             transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1), transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s;
@@ -178,8 +289,9 @@
 
         .card:hover {
             transform: translateY(-10px) !important; 
-            box-shadow: var(--shadow-strong);
-            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 20px 50px rgba(0, 229, 255, 0.2); /* ホバー時に青い光 */
+            background: rgba(255, 255, 255, 0.5);
+            border-color: #fff;
         }
 
         .iframe-container {
@@ -188,9 +300,8 @@
             height: 380px;
             border-radius: 16px;
             overflow: hidden;
-            background: #f0f0f0;
+            background: rgba(0,0,0,0.05);
             margin-bottom: 15px;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
         }
 
         iframe {
@@ -204,37 +315,41 @@
             width: 100%;
             height: 380px;
             border-radius: 16px;
-            background: linear-gradient(135deg, #37474F 0%, #263238 100%);
+            background: linear-gradient(135deg, #263238 0%, #37474F 100%);
             display: block;
             text-decoration: none;
             transition: all 0.3s;
             margin-bottom: 15px;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
             position: relative;
             overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
+        /* 画像なし時のサイバー背景 */
+        .playlist-placeholder.no-image {
+            background: #101010;
+        }
         .playlist-placeholder.no-image::before {
             content: '';
             position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
-            animation: rotateBg 10s linear infinite;
-            z-index: 0;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: 
+                linear-gradient(transparent 95%, var(--text-accent) 100%), 
+                linear-gradient(90deg, transparent 95%, var(--text-accent) 100%);
+            background-size: 40px 40px;
+            opacity: 0.1;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform: perspective(500px) rotateX(20deg) translateY(0); }
+            100% { transform: perspective(500px) rotateX(20deg) translateY(40px); }
         }
 
         .playlist-placeholder.has-image {
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-        }
-
-        @keyframes rotateBg {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
         }
 
         .playlist-content {
@@ -254,98 +369,89 @@
             background: rgba(0, 0, 0, 0.3);
             opacity: 0.7;
         }
-
         .playlist-placeholder.has-image:hover .playlist-content {
             background: rgba(0, 0, 0, 0.6);
             opacity: 1;
         }
-
-        .playlist-placeholder.no-image:hover {
-            transform: scale(0.98);
-            box-shadow: inset 0 0 30px rgba(0, 172, 193, 0.5);
-        }
-
+        
         .playlist-icon {
             font-size: 4rem;
             margin-bottom: 15px;
-            text-shadow: 0 0 20px rgba(0, 172, 193, 0.8);
+            filter: drop-shadow(0 0 10px var(--text-accent));
         }
 
         .playlist-title {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 10px;
+            font-family: var(--font-tech);
+            font-size: 1.4rem;
+            font-weight: 700;
             letter-spacing: 1px;
+            margin-bottom: 10px;
         }
 
         .playlist-btn {
             padding: 10px 25px;
-            background: var(--text-accent);
-            color: white;
-            border-radius: 30px;
+            background: transparent;
+            border: 1px solid var(--text-accent);
+            color: var(--text-accent);
+            border-radius: 4px;
+            font-family: var(--font-tech);
             font-weight: bold;
             margin-top: 10px;
+            transition: all 0.3s;
         }
+        .playlist-placeholder:hover .playlist-btn {
+            background: var(--text-accent);
+            color: #000;
+            box-shadow: 0 0 20px var(--text-accent);
+        }
+
 
         .comment-footer {
             margin-top: auto;
             display: flex;
             justify-content: flex-end;
-            border-top: 1px solid rgba(0,0,0,0.05);
+            border-top: 1px solid rgba(255,255,255,0.2);
             padding-top: 15px;
         }
 
-        /* --- ボタンデザイン修正 (サイバー調和) --- */
+        /* --- ボタンデザイン修正 (チップ型) --- */
         .comment-trigger {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid var(--text-accent);
-            color: var(--text-accent);
+            background: rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(0, 229, 255, 0.5);
+            color: #00838F;
             
-            /* フォントをポップアップと合わせる */
-            font-family: var(--font-mono); 
-            font-size: 0.85rem;
+            font-family: var(--font-tech); 
+            font-size: 0.8rem;
             letter-spacing: 0.1em;
             
-            border-radius: 4px; /* 丸みを減らしてチップっぽく */
-            padding: 8px 15px;
-            font-weight: bold;
+            border-radius: 4px;
+            padding: 8px 18px;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             position: relative;
             overflow: hidden;
         }
 
-        /* 少し発光するようなホバーエフェクト */
         .comment-trigger:hover {
-            background: rgba(0, 172, 193, 0.1);
-            box-shadow: 0 0 15px rgba(0, 172, 193, 0.3);
-            text-shadow: 0 0 5px rgba(0, 172, 193, 0.5);
-            transform: translateY(-2px);
+            background: var(--text-accent);
+            color: #fff;
+            border-color: var(--text-accent);
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.6);
         }
 
-        /* 左側の装飾バー */
-        .comment-trigger::before {
-            content: '';
-            display: inline-block;
-            width: 6px;
-            height: 6px;
-            background-color: var(--text-accent);
-            border-radius: 50%;
-            box-shadow: 0 0 5px var(--text-accent);
-        }
-
-        /* --- モーダル (ノイズ音声吹き出しデザイン) --- */
+        /* --- モーダル (ノイズ音声端末風) --- */
         .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 20, 30, 0.6);
-            backdrop-filter: blur(4px);
+            background: rgba(0, 20, 30, 0.7);
+            backdrop-filter: blur(8px);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -374,7 +480,7 @@
             height: 120px;
             object-fit: contain;
             z-index: 2;
-            filter: drop-shadow(0 0 15px rgba(0, 172, 193, 0.6));
+            filter: drop-shadow(0 0 20px var(--text-accent));
             animation: talkShake 0.2s infinite alternate; 
         }
 
@@ -384,51 +490,50 @@
         }
 
         .modal-content {
-            background-color: #111;
+            background-color: #0a0a0a;
+            /* ノイズテクスチャ */
             background-image: 
                 repeating-linear-gradient(
                     0deg,
                     transparent,
                     transparent 2px,
-                    rgba(255, 255, 255, 0.05) 2px,
-                    rgba(255, 255, 255, 0.05) 4px
+                    rgba(0, 255, 65, 0.03) 2px,
+                    rgba(0, 255, 65, 0.03) 4px
                 );
-            border: 3px solid #fff;
-            border-radius: 15px;
+            border: 2px solid var(--text-accent);
+            border-radius: 8px; /* 角を少し鋭く */
             padding: 30px;
             margin-top: 20px;
             width: 100%;
             text-align: left;
             position: relative;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            color: #00ff41;
+            box-shadow: 0 0 30px rgba(0, 229, 255, 0.15);
+            
+            color: var(--text-accent);
             font-family: var(--font-mono);
-            text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+            text-shadow: 0 0 5px rgba(0, 229, 255, 0.5);
+            
             transform: scale(0.9);
             transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
+        /* 吹き出しのしっぽ */
         .modal-content::after {
             content: '';
             position: absolute;
-            top: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-width: 0 15px 15px 15px;
+            top: -12px; left: 50%; transform: translateX(-50%);
+            border-width: 0 12px 12px 12px;
             border-style: solid;
-            border-color: transparent transparent #fff transparent;
-            z-index: 1;
+            border-color: transparent transparent var(--text-accent) transparent;
         }
         .modal-content::before {
             content: '';
             position: absolute;
-            top: -11px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-width: 0 12px 12px 12px;
+            top: -9px; left: 50%; transform: translateX(-50%);
+            border-width: 0 10px 10px 10px;
             border-style: solid;
-            border-color: transparent transparent #111 transparent;
-            z-index: 2;
+            border-color: transparent transparent #0a0a0a transparent;
+            z-index: 1;
         }
 
         .modal-overlay.active .modal-content {
@@ -437,15 +542,13 @@
 
         .modal-text {
             font-size: 1.1rem;
-            line-height: 1.6;
+            line-height: 1.8;
             margin-bottom: 25px;
         }
 
         .modal-text::after {
-            content: '▮';
+            content: '_';
             animation: blink 1s infinite;
-            margin-left: 5px;
-            opacity: 0.8;
         }
 
         @keyframes blink {
@@ -456,21 +559,20 @@
         .close-btn {
             display: block;
             margin: 0 auto;
-            background-color: transparent;
-            color: #fff;
-            border: 1px solid #fff;
+            background: transparent;
+            color: var(--text-accent);
+            border: 1px solid var(--text-accent);
             padding: 8px 30px;
-            border-radius: 4px;
-            font-family: var(--font-mono);
+            font-family: var(--font-tech);
             font-weight: bold;
             cursor: pointer;
             transition: all 0.2s;
         }
 
         .close-btn:hover {
-            background-color: #fff;
+            background: var(--text-accent);
             color: #000;
-            box-shadow: 0 0 15px rgba(255,255,255,0.8);
+            box-shadow: 0 0 15px var(--text-accent);
         }
 
         @keyframes slideInLeft {
@@ -482,11 +584,17 @@
 </head>
 <body>
 
+    <div class="bg-sky-container">
+        <div class="bg-clouds"></div>
+        <div class="bg-clouds-2"></div>
+    </div>
+    <div class="bg-overlay"></div>
+
     <header>
         <img src="icon.png" alt="Creator Icon" class="creator-icon">
         <div class="title-area">
             <h1>AI書記による<br>AI実験場</h1>
-            <div class="subtitle">EXPERIMENTAL MUSIC ARCHIVE</div>
+            <div class="subtitle">Experimental Music Archive</div>
         </div>
     </header>
 
@@ -497,15 +605,14 @@
             <img src="icon.png" alt="Creator Icon" class="modal-icon">
             <div class="modal-content">
                 <p class="modal-text" id="modal-message"></p>
-                <button class="close-btn" onclick="closeModal()">CLOSE_CONNECTION</button>
+                <button class="close-btn" onclick="closeModal()">TERMINATE</button>
             </div>
         </div>
     </div>
 
     <script>
         // =========================================================
-        // ★★★ データ編集エリア (セクション区分け対応) ★★★
-        // 自由にセクションを増やしたり、中身を入れ替えたりできます。
+        // ★★★ データ編集エリア ★★★
         // =========================================================
         
         const sections = [
@@ -553,7 +660,6 @@
                     }
                 ]
             }
-            // 新しいセクションを追加したい場合はここに { title: "...", items: [...] } をコピペしてください
         ];
 
 
@@ -565,27 +671,23 @@
         const modal = document.getElementById('modal');
         const modalMessage = document.getElementById('modal-message');
 
-        // HTML生成処理
-        sections.forEach((section) => {
-            // 1. セクションタイトルを表示
+        sections.forEach((section, secIndex) => {
+            // 1. セクションタイトル生成 (デザイン刷新)
             const titleDiv = document.createElement('div');
             titleDiv.className = 'section-title';
-            titleDiv.textContent = section.title;
+            // ナンバリングを01, 02のように付与
+            const num = (secIndex + 1).toString().padStart(2, '0');
+            titleDiv.innerHTML = `<span class="section-number">${num}</span> <span class="section-jp-text">${section.title}</span>`;
             grid.appendChild(titleDiv);
 
-            // 2. アイテムを表示
+            // 2. アイテム生成
             section.items.forEach((item) => {
                 const card = document.createElement('div');
                 card.className = 'card';
                 
-                // コメントデータを保持させるための独自属性
-                card.dataset.comment = item.comment; 
-
-                // HTMLの中身を作成
                 let cardContent = '';
 
                 if (item.url.includes('/playlist/')) {
-                    // プレイリストの場合
                     const hasImage = item.image ? 'has-image' : 'no-image';
                     const bgStyle = item.image ? `style="background-image: url('${item.image}');"` : '';
 
@@ -599,7 +701,6 @@
                         </a>
                     `;
                 } else {
-                    // 通常の曲の場合
                     let embedUrl = item.url;
                     if (!embedUrl.includes('/embed/')) {
                        embedUrl = embedUrl.replace('suno.com/song/', 'suno.com/embed/');
@@ -615,18 +716,17 @@
                     `;
                 }
 
-                // ボタン部分（共通）
+                // ボタンデザイン刷新
                 cardContent += `
                     <div class="comment-footer">
                         <button class="comment-trigger">
-                            COMMENT_LOG
+                            <span>💬</span> COMMENT_LOG
                         </button>
                     </div>
                 `;
 
                 card.innerHTML = cardContent;
                 
-                // ボタンにクリックイベントを設定
                 const btn = card.querySelector('.comment-trigger');
                 btn.addEventListener('click', () => {
                     openModal(item.comment);
@@ -646,19 +746,22 @@
 
         const observer = new IntersectionObserver((entries, observer) => {
             let delayCounter = 0;
-
             entries.forEach((entry) => {
                 if (entry.isIntersecting) {
+                    // タイトルかカードかで遅延を調整
+                    const isTitle = entry.target.classList.contains('section-title');
+                    const delay = isTitle ? 0 : delayCounter * 100;
+                    
                     setTimeout(() => {
                         entry.target.classList.add('visible');
-                    }, delayCounter * 100); 
-                    delayCounter++; 
+                    }, delay);
+                    
+                    if(!isTitle) delayCounter++; 
                     observer.unobserve(entry.target);
                 }
             });
         }, observerOptions);
 
-        // カードとタイトルを監視対象に追加
         document.querySelectorAll('.card, .section-title').forEach(el => {
             observer.observe(el);
         });
