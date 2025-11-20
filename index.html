@@ -7,92 +7,148 @@
     <style>
         /* --- デザイン設定 (CSS) --- */
         :root {
-            --bg-color: #121212;
-            --card-bg: #1e1e1e;
-            --text-color: #e0e0e0;
-            --accent-color: #4db6ac; /* 少しレトロな青緑 */
-            --modal-bg: rgba(255, 255, 255, 0.1);
+            /* カラーパレット: 未来的な空色・爽やか */
+            --bg-gradient: linear-gradient(135deg, #E0F7FA 0%, #80DEEA 100%);
+            --glass-bg: rgba(255, 255, 255, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.8);
+            --text-main: #37474F;
+            --text-accent: #00ACC1; /* 鮮やかなシアンブルー */
+            --shadow-soft: 0 10px 30px rgba(0, 172, 193, 0.15);
+            --shadow-strong: 0 20px 40px rgba(0, 131, 143, 0.25);
             --font-main: 'Helvetica Neue', Arial, sans-serif;
         }
 
         body {
             margin: 0;
             padding: 0;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            background: var(--bg-gradient);
+            background-attachment: fixed; /* 背景固定で奥行きを出す */
+            color: var(--text-main);
             font-family: var(--font-main);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        /* ヘッダーエリア */
+        /* --- ヘッダーエリア (大幅変更) --- */
         header {
-            text-align: center;
-            padding: 40px 20px;
-            animation: fadeInDown 1s ease-out;
+            display: flex;
+            align-items: center; /* 垂直方向中央揃え */
+            justify-content: flex-start; /* 左寄せ */
+            padding: 40px 5%;
+            background: linear-gradient(to right, rgba(255,255,255,0.8), rgba(255,255,255,0));
+            backdrop-filter: blur(5px);
+            margin-bottom: 40px;
+            border-bottom: 1px solid rgba(255,255,255,0.5);
+            box-shadow: var(--shadow-soft);
+            animation: slideInLeft 1s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
+        /* 特大アイコン */
         .creator-icon {
-            width: 120px;
-            height: 120px;
-            object-fit: contain; /* 画像全体を表示 */
-            border-radius: 20px; /* 角を少し丸く */
-            box-shadow: 0 0 20px rgba(77, 182, 172, 0.3);
-            margin-bottom: 15px;
-            transition: transform 0.3s ease;
+            width: 220px; /* かなり大きく */
+            height: 220px;
+            object-fit: contain; /* 全体を表示 */
+            border-radius: 30px; /* モダンな角丸 */
             background-color: #000;
+            box-shadow: var(--shadow-strong);
+            margin-right: 40px; /* タイトルとの距離 */
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            flex-shrink: 0; /* 縮まないようにする */
+            z-index: 10;
         }
 
         .creator-icon:hover {
-            transform: scale(1.05) rotate(-2deg);
+            transform: scale(1.02) rotate(-2deg);
+            box-shadow: 0 30px 60px rgba(0, 131, 143, 0.4);
+        }
+
+        /* タイトル周り */
+        .title-area {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         h1 {
-            font-size: 1.8rem;
+            font-size: 3.5rem; /* 特大文字 */
+            font-weight: 800;
             margin: 0;
-            letter-spacing: 2px;
-            background: linear-gradient(90deg, #fff, var(--accent-color));
+            line-height: 1.1;
+            background: linear-gradient(45deg, #006064, #00ACC1);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
+            text-shadow: 2px 2px 0px rgba(255,255,255,0.5);
         }
 
-        /* コンテンツグリッド */
+        .subtitle {
+            font-size: 1.2rem;
+            color: #546E7A;
+            margin-top: 10px;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+        }
+
+        /* レスポンシブ対応: スマホでは縦並びにする */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                text-align: center;
+                padding: 30px 20px;
+            }
+            .creator-icon {
+                margin-right: 0;
+                margin-bottom: 20px;
+                width: 160px;
+                height: 160px;
+            }
+            h1 {
+                font-size: 2.2rem;
+            }
+        }
+
+        /* --- コンテンツエリア --- */
         .container {
             width: 90%;
-            max-width: 1200px;
+            max-width: 1400px;
+            margin: 0 auto;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            padding-bottom: 60px;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); /* カード幅を少し広めに */
+            gap: 40px;
+            padding-bottom: 80px;
         }
 
-        /* 楽曲カード */
+        /* カードデザイン (グラスモーフィズム) */
         .card {
-            background-color: var(--card-bg);
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
-            transition: transform 0.3s, box-shadow 0.3s;
-            opacity: 0; /* アニメーション用に最初は透明 */
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 25px;
+            box-shadow: var(--shadow-soft);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0;
             animation: fadeInUp 0.8s forwards;
-            position: relative;
+            display: flex;
+            flex-direction: column;
         }
 
         .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 24px rgba(0,0,0,0.5);
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: var(--shadow-strong);
+            background: rgba(255, 255, 255, 0.8);
         }
 
-        /* iframeのレスポンシブ対応 */
+        /* Iframeコンテナ */
         .iframe-container {
             position: relative;
             width: 100%;
-            height: 380px; /* Sunoのプレイヤーに合わせた高さ */
-            border-radius: 12px;
+            height: 380px; /* Sunoプレイヤーの高さ */
+            border-radius: 16px;
             overflow: hidden;
-            margin-bottom: 10px;
+            background: #f0f0f0;
+            margin-bottom: 15px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
         }
 
         iframe {
@@ -102,36 +158,44 @@
         }
 
         /* コメントボタン */
-        .comment-btn-area {
+        .comment-footer {
+            margin-top: auto; /* 下端に寄せる */
             display: flex;
             justify-content: flex-end;
-            align-items: center;
-            margin-top: 10px;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            padding-top: 15px;
         }
 
         .comment-trigger {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
+            background: transparent;
+            border: 2px solid var(--text-accent);
+            color: var(--text-accent);
+            border-radius: 50px;
+            padding: 8px 20px;
+            font-size: 1rem;
+            font-weight: bold;
             cursor: pointer;
-            transition: transform 0.2s;
-            filter: grayscale(100%);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .comment-trigger:hover {
-            transform: scale(1.2);
-            filter: grayscale(0%);
+            background: var(--text-accent);
+            color: #fff;
+            box-shadow: 0 5px 15px rgba(0, 172, 193, 0.4);
         }
 
-        /* モーダル（ポップアップ） */
+        /* --- モーダル (ポップアップ) --- */
         .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
+            background: rgba(224, 247, 250, 0.85); /* 薄い青のオーバーレイ */
+            backdrop-filter: blur(8px);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -147,59 +211,65 @@
         }
 
         .modal-content {
-            background: rgba(30, 30, 30, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 30px;
-            border-radius: 20px;
-            max-width: 400px;
-            width: 80%;
+            background: #fff;
+            padding: 40px;
+            border-radius: 30px;
+            max-width: 500px;
+            width: 85%;
             text-align: center;
-            transform: translateY(20px);
-            transition: transform 0.3s ease;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            box-shadow: 0 30px 80px rgba(0, 96, 100, 0.3);
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
         }
 
         .modal-overlay.active .modal-content {
-            transform: translateY(0);
+            transform: scale(1);
         }
 
         .modal-icon {
-            width: 80px;
-            height: 80px;
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid var(--accent-color);
-            margin-bottom: 15px;
-        }
-
-        .modal-text {
-            font-size: 1.1rem;
-            line-height: 1.6;
+            border: 4px solid var(--text-accent);
+            margin-top: -90px; /* 枠からはみ出す演出 */
+            background: #000;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
             margin-bottom: 20px;
         }
 
+        .modal-text {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: #455A64;
+            margin-bottom: 30px;
+        }
+
         .close-btn {
-            background-color: var(--accent-color);
-            color: #000;
+            background-color: var(--text-accent);
+            color: #fff;
             border: none;
-            padding: 8px 24px;
-            border-radius: 20px;
+            padding: 12px 40px;
+            border-radius: 50px;
+            font-size: 1rem;
             font-weight: bold;
             cursor: pointer;
-            transition: background 0.2s;
+            box-shadow: 0 10px 20px rgba(0, 172, 193, 0.3);
+            transition: transform 0.2s;
         }
 
         .close-btn:hover {
-            background-color: #fff;
+            transform: scale(1.05);
         }
 
-        /* アニメーション定義 */
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* --- アニメーション定義 --- */
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
         }
         @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(40px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
@@ -209,126 +279,132 @@
 
     <header>
         <img src="ブラウン管_左横10度.jpg" alt="Creator Icon" class="creator-icon">
-        <h1>AI書記によるAI実験場</h1>
+        <div class="title-area">
+            <h1>AI書記による<br>AI実験場</h1>
+            <div class="subtitle">EXPERIMENTAL MUSIC ARCHIVE</div>
+        </div>
     </header>
 
-    <div class="container" id="content-grid">
-        </div>
+    <div class="container" id="content-grid"></div>
 
     <div class="modal-overlay" id="modal">
         <div class="modal-content">
             <img src="ブラウン管_左横10度.jpg" alt="Creator Icon" class="modal-icon">
-            <p class="modal-text" id="modal-message">コメントがここに表示されます</p>
-            <button class="close-btn" onclick="closeModal()">Close</button>
+            <p class="modal-text" id="modal-message"></p>
+            <button class="close-btn" onclick="closeModal()">閉じる</button>
         </div>
     </div>
 
     <script>
         // =========================================================
-        // ★★★ かんたん編集エリア ★★★
-        // ここにSunoのURLと、一言コメントを追加・編集してください。
-        // URLはSunoの「Share」から取得できるリンク、またはEmbed用リンクです。
+        // ★★★ データ編集エリア ★★★
         // =========================================================
         
         const contents = [
             {
-                url: "https://suno.com/embed/kp88ve3rLJMuwlmn", // 曲1
+                // 【重要】ここは短縮リンクのため、自動変換できません。
+                // Sunoの画面で「Share」→「Embed」を選び、表示されるURL(例: https://suno.com/embed/xxxx)に書き換えてください。
+                url: "https://suno.com/embed/8500a1c3-55c6-4a8f-ae01-49146328fcda", 
                 comment: "初期の実験作です。メロディラインが独特でお気に入り。"
             },
             {
-                url: "https://suno.com/embed/J3RXN4k1iMrMZG1C", // 曲2
+                // 【重要】ここもEmbed用URLへの書き換えを推奨します。
+                url: "https://suno.com/embed/c07949a8-f10a-46c0-a147-2561d983558d", 
                 comment: "AIによるボーカルの表現力をテストした一曲。"
             },
             {
-                url: "https://suno.com/embed/d2cdf5aa-ebc5-449e-a28e-030bea80c162", // プレイリスト1
+                // プレイリストURL (自動変換されます)
+                url: "https://suno.com/playlist/d2cdf5aa-ebc5-449e-a28e-030bea80c162",
                 comment: "夜のドライブで聴きたくなるようなセットリストを作成しました。"
             },
             {
-                url: "https://suno.com/embed/3332134a-a941-4183-9232-35e33e31bd47", // プレイリスト2
+                url: "https://suno.com/playlist/3332134a-a941-4183-9232-35e33e31bd47",
                 comment: "アップテンポな曲を集めて、作業用BGMとしてまとめています。"
             },
             {
-                url: "https://suno.com/embed/ecc1ec13-ce37-425f-a21a-4fb8c8e526ce", // プレイリスト3
+                url: "https://suno.com/playlist/ecc1ec13-ce37-425f-a21a-4fb8c8e526ce",
                 comment: "少し実験的なコード進行を多用したシリーズ。"
             },
             {
-                url: "https://suno.com/embed/b1b02fb9-6200-442a-8f3f-8a6cc8aba409", // プレイリスト4
+                url: "https://suno.com/playlist/b1b02fb9-6200-442a-8f3f-8a6cc8aba409",
                 comment: "アンビエント・チルアウト系のまとめです。"
             },
             {
-                url: "https://suno.com/embed/72db9808-6aca-4dec-8e4e-bab7c0893d01", // プレイリスト5
+                url: "https://suno.com/playlist/72db9808-6aca-4dec-8e4e-bab7c0893d01",
                 comment: "最新の生成結果を集めたプレイリスト。日々進化しています。"
             }
         ];
 
         // =========================================================
-        // システム設定（ここから下は触らなくてOKです）
+        // ロジック部分 (自動処理)
         // =========================================================
 
         const grid = document.getElementById('content-grid');
         const modal = document.getElementById('modal');
         const modalMessage = document.getElementById('modal-message');
 
-        // URLの形式を整える関数（ShareリンクをEmbedリンクへ変換する簡易処理）
-        function formatSunoUrl(url) {
-            // すでにembedが含まれていればそのまま
-            if (url.includes('/embed/')) return url;
+        // SunoのURLを埋め込み形式に変換する関数
+        function convertToEmbedUrl(originalUrl) {
+            // すでにembed形式なら何もしない
+            if (originalUrl.includes('/embed/')) {
+                return originalUrl;
+            }
             
-            // suno.com/s/xxx のような短縮URLの場合、iframeでうまく動かない場合があります。
-            // 基本的にはユーザー側で「Copy Embed Code」ではなくURLのID部分を使うのが安全ですが、
-            // ここでは提供されたURL構造に合わせてID抽出を試みます。
-            
-            // 注: Sunoの完全な仕様依存ですが、もし表示されない場合は
-            // contentsリストのurlを https://suno.com/embed/[ID] の形式に書き換えてください。
-            return url; 
+            // プレイリストURLの変換処理
+            // パターン: suno.com/playlist/[UUID] -> suno.com/embed/playlist/[UUID]
+            if (originalUrl.includes('/playlist/')) {
+                return originalUrl.replace('/playlist/', '/embed/playlist/');
+            }
+
+            // 注意: suno.com/s/xxx (短縮URL) はクライアント側でID解決ができないため、
+            // そのまま返します（結果として表示されない可能性があります）。
+            return originalUrl;
         }
 
-        // コンテンツの生成
+        // コンテンツ生成
         contents.forEach((item, index) => {
+            const embedUrl = convertToEmbedUrl(item.url);
             const card = document.createElement('div');
             card.className = 'card';
-            // アニメーションの遅延を設定（順番に表示させる）
-            card.style.animationDelay = `${index * 0.1}s`;
+            card.style.animationDelay = `${index * 0.15}s`;
 
-            // SunoのURL処理（IDの抽出などが複雑なため、埋め込みURLを直接指定することを推奨しますが、
-            // ここではiframeタグを生成します）
-            
-            // 提示されたURLは通常のリンクのため、以下のようにiframeに埋め込みます。
-            // ※Sunoの仕様変更により、"https://suno.com/embed/ID" の形式が最も安定します。
-            // 上記のcontentsリストでは、提供されたリンクからIDを推測してembed形式に修正済みです。
+            // 短縮リンク(s/)が含まれている場合の警告表示（編集者用）
+            let alertMsg = "";
+            if (embedUrl.includes('/s/')) {
+                alertMsg = `<div style="color:red; font-size:0.8rem; padding:10px;">※この曲を表示するには、コード内のURLを「Embed URL」に書き換えてください。</div>`;
+            }
 
             card.innerHTML = `
                 <div class="iframe-container">
                     <iframe 
-                        src="${item.url}" 
+                        src="${embedUrl}" 
                         allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
                         loading="lazy">
                     </iframe>
+                    ${alertMsg}
                 </div>
-                <div class="comment-btn-area">
-                    <button class="comment-trigger" onclick="openModal(${index})">💬</button>
+                <div class="comment-footer">
+                    <button class="comment-trigger" onclick="openModal(${index})">
+                        💬 Comment
+                    </button>
                 </div>
             `;
             grid.appendChild(card);
         });
 
-        // モーダルを開く
+        // モーダル操作
         function openModal(index) {
             const comment = contents[index].comment;
             modalMessage.textContent = comment || "コメントはありません";
             modal.classList.add('active');
         }
 
-        // モーダルを閉じる
         function closeModal() {
             modal.classList.remove('active');
         }
 
-        // 背景クリックでも閉じる
         modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                closeModal();
-            }
+            if (e.target === modal) closeModal();
         });
 
     </script>
