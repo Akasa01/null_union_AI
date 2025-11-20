@@ -123,6 +123,7 @@
             animation: fadeInUp 0.8s forwards;
             display: flex;
             flex-direction: column;
+            position: relative;
         }
 
         .card:hover {
@@ -146,6 +147,71 @@
             width: 100%;
             height: 100%;
             border: none;
+        }
+
+        /* プレイリスト用カードデザイン */
+        .playlist-placeholder {
+            width: 100%;
+            height: 380px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #37474F 0%, #263238 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            text-decoration: none;
+            transition: all 0.3s;
+            margin-bottom: 15px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .playlist-placeholder::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+            animation: rotateBg 10s linear infinite;
+        }
+
+        @keyframes rotateBg {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .playlist-placeholder:hover {
+            transform: scale(0.98);
+            box-shadow: inset 0 0 30px rgba(0, 172, 193, 0.5);
+        }
+
+        .playlist-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            z-index: 1;
+            text-shadow: 0 0 20px rgba(0, 172, 193, 0.8);
+        }
+
+        .playlist-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            z-index: 1;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .playlist-btn {
+            padding: 10px 25px;
+            background: var(--text-accent);
+            color: white;
+            border-radius: 30px;
+            font-weight: bold;
+            z-index: 1;
+            margin-top: 10px;
         }
 
         .comment-footer {
@@ -326,48 +392,51 @@
         const modal = document.getElementById('modal');
         const modalMessage = document.getElementById('modal-message');
 
-        // ★★★ URL変換ロジックの修正版（決定版） ★★★
-        // プレイリストのURL構造を正しく変換するように戻しました
-        function convertToEmbedUrl(originalUrl) {
-            // すでにEmbed形式なら何もしない
-            if (originalUrl.includes('/embed/')) return originalUrl;
-            
-            // プレイリストの場合: 
-            // suno.com/playlist/[ID] → suno.com/embed/playlist/[ID] に変換します
-            if (originalUrl.includes('/playlist/')) {
-                return originalUrl.replace('/playlist/', '/embed/playlist/');
-            }
-            
-            return originalUrl;
-        }
-
         contents.forEach((item, index) => {
-            const embedUrl = convertToEmbedUrl(item.url);
             const card = document.createElement('div');
             card.className = 'card';
             card.style.animationDelay = `${index * 0.15}s`;
 
-            let alertMsg = "";
-            // 曲の共有リンク（/s/）の場合のみ警告を出す
-            if (embedUrl.includes('/s/')) {
-                alertMsg = `<div style="color:red; font-size:0.8rem; padding:10px;">※Shareリンクは表示できません。曲の場合はEmbed URLを使用してください。</div>`;
-            }
+            // ★自動判定ロジック★
+            // プレイリストURLが含まれている場合、iframeではなく「リンクカード」を作成します
+            if (item.url.includes('/playlist/')) {
+                card.innerHTML = `
+                    <a href="${item.url}" target="_blank" class="playlist-placeholder">
+                        <div class="playlist-icon">🎵</div>
+                        <div class="playlist-title">Open Playlist</div>
+                        <div class="playlist-btn">▶ Play on Suno</div>
+                    </a>
+                    <div class="comment-footer">
+                        <button class="comment-trigger" onclick="openModal(${index})">
+                            💬 Comment
+                        </button>
+                    </div>
+                `;
+            } else {
+                // 通常の曲の場合はiframeを表示
+                // Embed形式になっていない場合は自動変換
+                let embedUrl = item.url;
+                if (!embedUrl.includes('/embed/')) {
+                   embedUrl = embedUrl.replace('suno.com/song/', 'suno.com/embed/');
+                   // s/ 形式の短縮リンクは変換できないのでそのまま入れますが、極力EmbedURLを使ってください
+                }
 
-            card.innerHTML = `
-                <div class="iframe-container">
-                    <iframe 
-                        src="${embedUrl}" 
-                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
-                        loading="lazy">
-                    </iframe>
-                    ${alertMsg}
-                </div>
-                <div class="comment-footer">
-                    <button class="comment-trigger" onclick="openModal(${index})">
-                        💬 Comment
-                    </button>
-                </div>
-            `;
+                card.innerHTML = `
+                    <div class="iframe-container">
+                        <iframe 
+                            src="${embedUrl}" 
+                            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+                            loading="lazy">
+                        </iframe>
+                    </div>
+                    <div class="comment-footer">
+                        <button class="comment-trigger" onclick="openModal(${index})">
+                            💬 Comment
+                        </button>
+                    </div>
+                `;
+            }
+            
             grid.appendChild(card);
         });
 
