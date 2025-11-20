@@ -15,7 +15,7 @@
             --shadow-soft: 0 10px 30px rgba(0, 172, 193, 0.15);
             --shadow-strong: 0 20px 40px rgba(0, 131, 143, 0.25);
             --font-main: 'Helvetica Neue', Arial, sans-serif;
-            --font-mono: 'Courier New', Courier, monospace; /* ノイズ音声用フォント */
+            --font-mono: 'Courier New', Courier, monospace; /* サイバー・端末用フォント */
         }
 
         body {
@@ -37,10 +37,9 @@
             padding: 40px 5%;
             background: linear-gradient(to right, rgba(255,255,255,0.8), rgba(255,255,255,0));
             backdrop-filter: blur(5px);
-            margin-bottom: 40px;
+            margin-bottom: 20px;
             border-bottom: 1px solid rgba(255,255,255,0.5);
             box-shadow: var(--shadow-soft);
-            /* ヘッダーだけは最初からアニメーション表示 */
             animation: slideInLeft 1s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
@@ -115,7 +114,46 @@
             padding-bottom: 80px;
         }
 
-        /* カードの初期状態：透明にして下にずらしておく */
+        /* --- セクションタイトル帯 --- */
+        .section-title {
+            grid-column: 1 / -1; /* グリッドの横幅いっぱいに広げる */
+            margin-top: 40px;
+            margin-bottom: 10px;
+            padding: 15px 25px;
+            
+            /* グラスモーフィズム + デジタル感 */
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(10px);
+            border-left: 6px solid var(--text-accent);
+            border-radius: 0 10px 10px 0;
+            
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--text-main);
+            letter-spacing: 0.05em;
+            
+            opacity: 0; /* スクロールアニメーション用 */
+            transform: translateX(-20px);
+            transition: opacity 0.8s, transform 0.8s;
+            
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title::before {
+            content: '//'; /* コードっぽい装飾 */
+            color: var(--text-accent);
+            margin-right: 10px;
+            font-family: var(--font-mono);
+            font-size: 1.2rem;
+        }
+
+        .section-title.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* --- カードデザイン --- */
         .card {
             background: var(--glass-bg);
             backdrop-filter: blur(12px);
@@ -133,15 +171,12 @@
             transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1), transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s;
         }
 
-        /* スクロールで画面に入った時に付与されるクラス */
         .card.visible {
             opacity: 1;
             transform: translateY(0);
         }
 
         .card:hover {
-            /* hover時のtransformがvisibleと競合しないよう !important を使うか、
-               translateY(0) を基準に少し浮かす処理にする */
             transform: translateY(-10px) !important; 
             box-shadow: var(--shadow-strong);
             background: rgba(255, 255, 255, 0.8);
@@ -260,25 +295,46 @@
             padding-top: 15px;
         }
 
+        /* --- ボタンデザイン修正 (サイバー調和) --- */
         .comment-trigger {
-            background: transparent;
-            border: 2px solid var(--text-accent);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--text-accent);
             color: var(--text-accent);
-            border-radius: 50px;
-            padding: 8px 20px;
-            font-size: 1rem;
+            
+            /* フォントをポップアップと合わせる */
+            font-family: var(--font-mono); 
+            font-size: 0.85rem;
+            letter-spacing: 0.1em;
+            
+            border-radius: 4px; /* 丸みを減らしてチップっぽく */
+            padding: 8px 15px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
             display: flex;
             align-items: center;
             gap: 8px;
+            position: relative;
+            overflow: hidden;
         }
 
+        /* 少し発光するようなホバーエフェクト */
         .comment-trigger:hover {
-            background: var(--text-accent);
-            color: #fff;
-            box-shadow: 0 5px 15px rgba(0, 172, 193, 0.4);
+            background: rgba(0, 172, 193, 0.1);
+            box-shadow: 0 0 15px rgba(0, 172, 193, 0.3);
+            text-shadow: 0 0 5px rgba(0, 172, 193, 0.5);
+            transform: translateY(-2px);
+        }
+
+        /* 左側の装飾バー */
+        .comment-trigger::before {
+            content: '';
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background-color: var(--text-accent);
+            border-radius: 50%;
+            box-shadow: 0 0 5px var(--text-accent);
         }
 
         /* --- モーダル (ノイズ音声吹き出しデザイン) --- */
@@ -288,7 +344,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 20, 30, 0.6); /* 少し暗めの背景 */
+            background: rgba(0, 20, 30, 0.6);
             backdrop-filter: blur(4px);
             display: flex;
             justify-content: center;
@@ -313,14 +369,12 @@
             width: 90%;
         }
 
-        /* アイコン（ブラウン管） */
         .modal-icon {
             width: 120px;
             height: 120px;
             object-fit: contain;
             z-index: 2;
             filter: drop-shadow(0 0 15px rgba(0, 172, 193, 0.6));
-            /* 喋っているように少し震えるアニメーション */
             animation: talkShake 0.2s infinite alternate; 
         }
 
@@ -329,9 +383,7 @@
             to { transform: translateY(-2px) rotate(1deg); }
         }
 
-        /* 吹き出し本体 */
         .modal-content {
-            /* ノイズ背景の生成 */
             background-color: #111;
             background-image: 
                 repeating-linear-gradient(
@@ -344,34 +396,29 @@
             border: 3px solid #fff;
             border-radius: 15px;
             padding: 30px;
-            margin-top: 20px; /* アイコンとの距離 */
+            margin-top: 20px;
             width: 100%;
-            text-align: left; /* 端末っぽく左揃え */
+            text-align: left;
             position: relative;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            
-            /* デジタルテキスト風 */
-            color: #00ff41; /* ハッカーグリーン（もしくは白 #fff でもOK） */
+            color: #00ff41;
             font-family: var(--font-mono);
             text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
-            
             transform: scale(0.9);
             transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        /* 吹き出しのしっぽ */
         .modal-content::after {
             content: '';
             position: absolute;
-            top: -15px; /* 上に突き出す */
+            top: -15px;
             left: 50%;
             transform: translateX(-50%);
             border-width: 0 15px 15px 15px;
             border-style: solid;
-            border-color: transparent transparent #fff transparent; /* 枠線 */
+            border-color: transparent transparent #fff transparent;
             z-index: 1;
         }
-        /* しっぽの中身（黒く塗りつぶす） */
         .modal-content::before {
             content: '';
             position: absolute;
@@ -392,7 +439,6 @@
             font-size: 1.1rem;
             line-height: 1.6;
             margin-bottom: 25px;
-            /* 文字が一文字ずつ出ているような演出（今回はCSSアニメで点滅カーソルのみ） */
         }
 
         .modal-text::after {
@@ -458,40 +504,58 @@
 
     <script>
         // =========================================================
-        // ★★★ データ編集エリア ★★★
+        // ★★★ データ編集エリア (セクション区分け対応) ★★★
+        // 自由にセクションを増やしたり、中身を入れ替えたりできます。
         // =========================================================
         
-        const contents = [
+        const sections = [
             {
-                url: "https://suno.com/embed/8500a1c3-55c6-4a8f-ae01-49146328fcda", 
-                comment: "空白同盟のメインテーマソングとして制作しました。改めて聞くと流石に曲調が古いかも。"
+                title: "現時点おすすめ曲",
+                items: [
+                    {
+                        url: "https://suno.com/embed/8500a1c3-55c6-4a8f-ae01-49146328fcda", 
+                        comment: "空白同盟のメインテーマソングとして制作しました。改めて聞くと流石に曲調が古いかも。"
+                    },
+                    {
+                        url: "https://suno.com/embed/c07949a8-f10a-46c0-a147-2561d983558d", 
+                        comment: "破壊的電波ソングテスト作の中で現時点でのお気に入りです。"
+                    }
+                ]
             },
             {
-                url: "https://suno.com/embed/c07949a8-f10a-46c0-a147-2561d983558d", 
-                comment: "破壊的電波ソングテスト作の中で現時点でのお気に入りです。"
+                title: "お気に入りプレイリスト",
+                items: [
+                    {
+                        url: "https://suno.com/playlist/d2cdf5aa-ebc5-449e-a28e-030bea80c162",
+                        comment: "空白同盟の音楽ゲームを作りたいと思い、制作中のプレイリストです。",
+                        image: "playlist_bg1.jpg"
+                    },
+                    {
+                        url: "https://suno.com/playlist/3332134a-a941-4183-9232-35e33e31bd47",
+                        comment: "ちょっとバトルっぽいインストアルバムができたので。戦場的なイメージです。"
+                    },
+                    {
+                        url: "https://suno.com/playlist/ecc1ec13-ce37-425f-a21a-4fb8c8e526ce",
+                        comment: "TRPGダブルクロス3rdを意識した、熱血系バトルインストアルバムです。"
+                    }
+                ]
             },
             {
-                url: "https://suno.com/playlist/d2cdf5aa-ebc5-449e-a28e-030bea80c162",
-                comment: "空白同盟の音楽ゲームを作りたいと思い、制作中のプレイリストです。",
-                image: "playlist_bg1.jpg" 
-            },
-            {
-                url: "https://suno.com/playlist/3332134a-a941-4183-9232-35e33e31bd47",
-                comment: "ちょっとバトルっぽいインストアルバムができたので。戦場的なイメージです。"
-            },
-            {
-                url: "https://suno.com/playlist/ecc1ec13-ce37-425f-a21a-4fb8c8e526ce",
-                comment: "TRPGダブルクロス3rdを意識した、熱血系バトルインストアルバムです。"
-            },
-            {
-                url: "https://suno.com/playlist/b1b02fb9-6200-442a-8f3f-8a6cc8aba409",
-                comment: "ニディガの「きゅびびびびずむ」のような音楽破壊系電波ソングは、SUNOAIで作れるのか？　という実験ガチャ置き場です。"
-            },
-            {
-                url: "https://suno.com/playlist/72db9808-6aca-4dec-8e4e-bab7c0893d01",
-                comment: "好きな曲調が古いことに気付いたので、令和ニュアンスを足していくチャレンジガチャ置き場です。"
+                title: "実験的プレイリスト",
+                items: [
+                    {
+                        url: "https://suno.com/playlist/b1b02fb9-6200-442a-8f3f-8a6cc8aba409",
+                        comment: "ニディガの「きゅびびびびずむ」のような音楽破壊系電波ソングは、SUNOAIで作れるのか？　という実験ガチャ置き場です。"
+                    },
+                    {
+                        url: "https://suno.com/playlist/72db9808-6aca-4dec-8e4e-bab7c0893d01",
+                        comment: "好きな曲調が古いことに気付いたので、令和ニュアンスを足していくチャレンジガチャ置き場です。"
+                    }
+                ]
             }
+            // 新しいセクションを追加したい場合はここに { title: "...", items: [...] } をコピペしてください
         ];
+
 
         // =========================================================
         // ロジック部分
@@ -501,91 +565,108 @@
         const modal = document.getElementById('modal');
         const modalMessage = document.getElementById('modal-message');
 
-        // カード生成
-        contents.forEach((item, index) => {
-            const card = document.createElement('div');
-            card.className = 'card';
-            // indexごとの遅延はJavascriptではなく、Observerで制御するためここでは設定しません
+        // HTML生成処理
+        sections.forEach((section) => {
+            // 1. セクションタイトルを表示
+            const titleDiv = document.createElement('div');
+            titleDiv.className = 'section-title';
+            titleDiv.textContent = section.title;
+            grid.appendChild(titleDiv);
 
-            // プレイリストの場合
-            if (item.url.includes('/playlist/')) {
-                const hasImage = item.image ? 'has-image' : 'no-image';
-                const bgStyle = item.image ? `style="background-image: url('${item.image}');"` : '';
+            // 2. アイテムを表示
+            section.items.forEach((item) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                
+                // コメントデータを保持させるための独自属性
+                card.dataset.comment = item.comment; 
 
-                card.innerHTML = `
-                    <a href="${item.url}" target="_blank" class="playlist-placeholder ${hasImage}" ${bgStyle}>
-                        <div class="playlist-content">
-                            <div class="playlist-icon">🎵</div>
-                            <div class="playlist-title">Open Playlist</div>
-                            <div class="playlist-btn">▶ Play on Suno</div>
+                // HTMLの中身を作成
+                let cardContent = '';
+
+                if (item.url.includes('/playlist/')) {
+                    // プレイリストの場合
+                    const hasImage = item.image ? 'has-image' : 'no-image';
+                    const bgStyle = item.image ? `style="background-image: url('${item.image}');"` : '';
+
+                    cardContent = `
+                        <a href="${item.url}" target="_blank" class="playlist-placeholder ${hasImage}" ${bgStyle}>
+                            <div class="playlist-content">
+                                <div class="playlist-icon">🎵</div>
+                                <div class="playlist-title">Open Playlist</div>
+                                <div class="playlist-btn">▶ Play on Suno</div>
+                            </div>
+                        </a>
+                    `;
+                } else {
+                    // 通常の曲の場合
+                    let embedUrl = item.url;
+                    if (!embedUrl.includes('/embed/')) {
+                       embedUrl = embedUrl.replace('suno.com/song/', 'suno.com/embed/');
+                    }
+                    cardContent = `
+                        <div class="iframe-container">
+                            <iframe 
+                                src="${embedUrl}" 
+                                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+                                loading="lazy">
+                            </iframe>
                         </div>
-                    </a>
-                    <div class="comment-footer">
-                        <button class="comment-trigger" onclick="openModal(${index})">
-                            💬 Comment
-                        </button>
-                    </div>
-                `;
-            } else {
-                // 通常の曲の場合
-                let embedUrl = item.url;
-                if (!embedUrl.includes('/embed/')) {
-                   embedUrl = embedUrl.replace('suno.com/song/', 'suno.com/embed/');
+                    `;
                 }
 
-                card.innerHTML = `
-                    <div class="iframe-container">
-                        <iframe 
-                            src="${embedUrl}" 
-                            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
-                            loading="lazy">
-                        </iframe>
-                    </div>
+                // ボタン部分（共通）
+                cardContent += `
                     <div class="comment-footer">
-                        <button class="comment-trigger" onclick="openModal(${index})">
-                            💬 Comment
+                        <button class="comment-trigger">
+                            COMMENT_LOG
                         </button>
                     </div>
                 `;
-            }
-            grid.appendChild(card);
+
+                card.innerHTML = cardContent;
+                
+                // ボタンにクリックイベントを設定
+                const btn = card.querySelector('.comment-trigger');
+                btn.addEventListener('click', () => {
+                    openModal(item.comment);
+                });
+
+                grid.appendChild(card);
+            });
         });
 
-        // ★スクロールアニメーション制御 (Intersection Observer) ★
-        // 画面に入ってきた要素を監視し、順番にクラスを付与して表示させる
+
+        // ★スクロールアニメーション制御★
         const observerOptions = {
             root: null,
             rootMargin: '0px',
-            threshold: 0.1 // 10%見えたら発火
+            threshold: 0.1 
         };
 
         const observer = new IntersectionObserver((entries, observer) => {
-            let delayCounter = 0; // 同時に見えた要素に時差をつけるためのカウンタ
+            let delayCounter = 0;
 
             entries.forEach((entry) => {
                 if (entry.isIntersecting) {
-                    // 画面に入った要素に対して
                     setTimeout(() => {
                         entry.target.classList.add('visible');
-                    }, delayCounter * 100); // 0.1秒ずつずらす
-
+                    }, delayCounter * 100); 
                     delayCounter++; 
-                    observer.unobserve(entry.target); // 一度表示したら監視終了
+                    observer.unobserve(entry.target);
                 }
             });
         }, observerOptions);
 
-        // 全てのカードを監視対象に追加
-        document.querySelectorAll('.card').forEach(card => {
-            observer.observe(card);
+        // カードとタイトルを監視対象に追加
+        document.querySelectorAll('.card, .section-title').forEach(el => {
+            observer.observe(el);
         });
 
 
         // ★モーダル制御★
-        function openModal(index) {
-            const comment = contents[index].comment;
-            // テキストをセット（本当は一文字ずつ表示したい場合はここでJS処理を追加できます）
-            modalMessage.textContent = comment || "NO_DATA..."; 
+        function openModal(commentText) {
+            modalMessage.textContent = commentText || "NO_DATA_FOUND..."; 
             modal.classList.add('active');
         }
 
@@ -594,7 +675,6 @@
         }
 
         modal.addEventListener('click', (e) => {
-            // 背景クリックまたはmodal-wrapperクリックで閉じる
             if (e.target === modal || e.target.classList.contains('modal-wrapper')) {
                 closeModal();
             }
