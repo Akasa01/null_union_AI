@@ -154,12 +154,9 @@
             width: 100%;
             height: 380px;
             border-radius: 16px;
+            /* デフォルトの背景（画像なしの場合） */
             background: linear-gradient(135deg, #37474F 0%, #263238 100%);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: #fff;
+            display: block; /* オーバーレイレイアウトのためにblockに変更 */
             text-decoration: none;
             transition: all 0.3s;
             margin-bottom: 15px;
@@ -168,7 +165,8 @@
             overflow: hidden;
         }
 
-        .playlist-placeholder::before {
+        /* 画像がない時の回転アニメーション */
+        .playlist-placeholder.no-image::before {
             content: '';
             position: absolute;
             top: -50%;
@@ -177,6 +175,14 @@
             height: 200%;
             background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
             animation: rotateBg 10s linear infinite;
+            z-index: 0;
+        }
+
+        /* 画像がある時の設定 */
+        .playlist-placeholder.has-image {
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         @keyframes rotateBg {
@@ -184,22 +190,48 @@
             100% { transform: rotate(360deg); }
         }
 
-        .playlist-placeholder:hover {
+        /* コンテンツのオーバーレイ（画像あり・なし共通） */
+        .playlist-content {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        /* 画像がある場合のみのオーバーレイ挙動 */
+        .playlist-placeholder.has-image .playlist-content {
+            background: rgba(0, 0, 0, 0.3); /* 通常時：少し暗くして文字をうっすら見せる */
+            opacity: 0.7; /* 全体の透明度を下げる（文字がうっすらになる） */
+        }
+
+        /* ホバー時の挙動（画像あり） */
+        .playlist-placeholder.has-image:hover .playlist-content {
+            background: rgba(0, 0, 0, 0.6); /* ホバー時：暗くして文字をくっきり */
+            opacity: 1; /* 完全表示 */
+        }
+
+        /* ホバー時の挙動（画像なし・デフォルト） */
+        .playlist-placeholder.no-image:hover {
             transform: scale(0.98);
             box-shadow: inset 0 0 30px rgba(0, 172, 193, 0.5);
         }
 
+
         .playlist-icon {
             font-size: 4rem;
             margin-bottom: 15px;
-            z-index: 1;
             text-shadow: 0 0 20px rgba(0, 172, 193, 0.8);
         }
 
         .playlist-title {
             font-size: 1.5rem;
             font-weight: bold;
-            z-index: 1;
             margin-bottom: 10px;
             letter-spacing: 1px;
         }
@@ -210,7 +242,6 @@
             color: white;
             border-radius: 30px;
             font-weight: bold;
-            z-index: 1;
             margin-top: 10px;
         }
 
@@ -350,7 +381,8 @@
     <script>
         // =========================================================
         // ★★★ データ編集エリア ★★★
-        // プレイリストは「矢印マーク(Share)」→「Copy Link」のURLそのままでOKです。
+        // プレイリストに画像をつけたい場合は、以下のように image: "ファイル名" を追加してください。
+        // 画像がない場合は、自動的にデフォルトの背景になります。
         // =========================================================
         
         const contents = [
@@ -364,11 +396,13 @@
             },
             {
                 url: "https://suno.com/playlist/d2cdf5aa-ebc5-449e-a28e-030bea80c162",
-                comment: "空白同盟の音楽ゲームを作りたいと思い、制作中のプレイリストです。"
+                comment: "空白同盟の音楽ゲームを作りたいと思い、制作中のプレイリストです。",
+                image: "playlist_bg1.jpg" // ★ここに画像ファイル名を書くと、その画像が表紙になります
             },
             {
                 url: "https://suno.com/playlist/3332134a-a941-4183-9232-35e33e31bd47",
-                comment: "ちょっとバトルっぽいインストアルバムができたので。戦場的なイメージです。"
+                comment: "ちょっとバトルっぽいインストアルバムができたので。戦場的なイメージです。",
+                // image: "" // 画像を指定しなければデフォルトになります
             },
             {
                 url: "https://suno.com/playlist/ecc1ec13-ce37-425f-a21a-4fb8c8e526ce",
@@ -397,14 +431,20 @@
             card.className = 'card';
             card.style.animationDelay = `${index * 0.15}s`;
 
-            // ★自動判定ロジック★
-            // プレイリストURLが含まれている場合、iframeではなく「リンクカード」を作成します
+            // プレイリストの場合
             if (item.url.includes('/playlist/')) {
+                
+                // 画像が設定されているかチェック
+                const hasImage = item.image ? 'has-image' : 'no-image';
+                const bgStyle = item.image ? `style="background-image: url('${item.image}');"` : '';
+
                 card.innerHTML = `
-                    <a href="${item.url}" target="_blank" class="playlist-placeholder">
-                        <div class="playlist-icon">🎵</div>
-                        <div class="playlist-title">Open Playlist</div>
-                        <div class="playlist-btn">▶ Play on Suno</div>
+                    <a href="${item.url}" target="_blank" class="playlist-placeholder ${hasImage}" ${bgStyle}>
+                        <div class="playlist-content">
+                            <div class="playlist-icon">🎵</div>
+                            <div class="playlist-title">Open Playlist</div>
+                            <div class="playlist-btn">▶ Play on Suno</div>
+                        </div>
                     </a>
                     <div class="comment-footer">
                         <button class="comment-trigger" onclick="openModal(${index})">
@@ -413,12 +453,10 @@
                     </div>
                 `;
             } else {
-                // 通常の曲の場合はiframeを表示
-                // Embed形式になっていない場合は自動変換
+                // 通常の曲の場合 (Embed)
                 let embedUrl = item.url;
                 if (!embedUrl.includes('/embed/')) {
                    embedUrl = embedUrl.replace('suno.com/song/', 'suno.com/embed/');
-                   // s/ 形式の短縮リンクは変換できないのでそのまま入れますが、極力EmbedURLを使ってください
                 }
 
                 card.innerHTML = `
