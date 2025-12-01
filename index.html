@@ -434,5 +434,41 @@
         function closeModal() { modal.classList.remove('active'); }
         modal.addEventListener('click', e => { if(e.target === modal || e.target.classList.contains('modal-container')) closeModal(); });
     </script>
+    <style>
+  /* 背景の黒いスクリーン */
+  .modal-overlay {
+    display: none; /* 普段は隠しておく */
+    position: fixed; z-index: 9999;
+    left: 0; top: 0; width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.8); /* 半透明の黒 */
+    align-items: center; justify-content: center;
+  }
+  /* 拡大画像のスタイル */
+  .modal-content {
+    max-width: 90%; max-height: 90%;
+    box-shadow: 0 0 20px rgba(255,255,255,0.2);
+    animation: zoomIn 0.3s; /* ふわっと表示 */
+  }
+  @keyframes zoomIn { from {transform:scale(0.8); opacity:0;} to {transform:scale(1); opacity:1;} }
+</style>
+
+<div id="imageModal" class="modal-overlay" onclick="this.style.display='none'">
+  <img class="modal-content" id="modalImg">
+</div>
+
+<script>
+  // "zoomable-img" というクラスがついた画像を全部探す
+  const zoomImages = document.querySelectorAll('.zoomable-img');
+  const modal = document.getElementById('imageModal');
+  const modalImg = document.getElementById('modalImg');
+
+  // それぞれの画像にクリックイベントをつける
+  zoomImages.forEach(img => {
+    img.onclick = function(){
+      modal.style.display = "flex"; // ポップアップを表示
+      modalImg.src = this.src;      // クリックした画像のURLをセット
+    }
+  });
+</script>
 </body>
 </html>
