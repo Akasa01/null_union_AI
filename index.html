@@ -344,9 +344,9 @@
                         // ↓ ここのコメントがLOGボタンの中に収納されます
                         comment: "AI書記こと私のアイコンです。niji・journey→Mix board→手動透過で生成。（画像をタップで拡大）",
                         images: [
-                            "icon.png", 
-                            "ブラウン管_正面.png", 
-                            "ブラウン管_横10度非透過.png"
+                            "images/icon_tv_side.png", 
+                            "images/icon_tv_front1.png", 
+                            "images/icon_tv_front2.png"
                         ]
                     }
                 ]
@@ -383,6 +383,7 @@
                     ).join('');
 
                     cardMainContent = `
+                        <p style="font-size:0.8rem; color:var(--accent-cyan); font-weight:bold; margin-bottom:5px;">🌈 niji・journer</p>
                         <h3 style="margin:5px 0 10px; font-size:1.4rem;">${item.title}</h3>
                         <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom:15px;">
                             ${imagesHtml}
